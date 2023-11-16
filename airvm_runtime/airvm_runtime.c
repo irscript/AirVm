@@ -104,7 +104,8 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
 #include "inline/airvm_mov_r4.inl"
         // 寄存器间赋值:op subop,des,src  : src => des :8-8-8-8
 #include "inline/airvm_mov_r8.inl"
-
+// 寄存器间赋值:op subop,des,src  : src => des :8-8-16-16
+#include "inline/airvm_mov_r16.inl"
         
 
             // op 默认处理
