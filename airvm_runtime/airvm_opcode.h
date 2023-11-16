@@ -59,7 +59,7 @@ enum OPEnum
     // 数学二地址码：
     op_math2_r8_subop = opval(30),  // op subop,des,src  : src => des :8-8-8-8
     op_math2_r16_subop = opval(31), // op subop,des,src  : src => des :8-8-16-16
-    /* 子码定义：赋值 、类型转换、一元数学运算、三角运算等*/
+    /* 子码定义：一元数学运算、三角运算等*/
 
     // 数学三地址码:
     op_math3_r4_subop = opval(32),  // op subop,des,src,src2  : src subop src2 => des 8-8-8-4-4

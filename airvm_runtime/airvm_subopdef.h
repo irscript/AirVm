@@ -68,42 +68,42 @@ enum SubOPEnum
     subop_mov_w64_uh16 = 25, // 获取寄存器的高 16 位，进行零扩展到 64 位
     subop_mov_w64_sl16 = 26, // 获取寄存器的低 16 位，进行符号扩展到 64 位
     subop_mov_w64_ul16 = 27, // 获取寄存器的低 16 位，进行零扩展到 64 位
-    
+
     subop_mov_w64_i64 = 28, // 64 位原值拷贝传递,不过源值为 int64
     subop_mov_w64_u64 = 29, // 64 位原值拷贝传递,不过源值为 uint64
     subop_mov_w64_f64 = 30, // 64 位原值拷贝传递,不过源值为 flt64
     subop_bitcast_w64 = 31, // 64 位原值拷贝传递,不过标明是位转换
 
     // 整数间类型转换
-    subop_cast_i32_b64 = 32,
-    subop_cast_u32_b64 = 33,
-    subop_cast_b64_i32 = 34,
-    subop_cast_b64_u32 = 35,
+    subop_cast_i32_to_i64 = 32,
+    subop_cast_u32_to_u64 = 33,
+    subop_cast_i64_to_i32 = 34,
+    subop_cast_u64_to_u32 = 35,
 
     // 浮点间类型转换
-    subop_cast_f32_f64 = 36,
-    subop_cast_f64_f32 = 37,
+    subop_cast_f32_to_f64 = 36,
+    subop_cast_f64_to_f32 = 37,
 
     // 整数、浮点间类型转换
-    subop_cast_i32_f32 = 38,
-    subop_cast_u32_f32 = 39,
-    subop_cast_i32_f64 = 40,
-    subop_cast_u32_f64 = 41,
+    subop_cast_i32_to_f32 = 38,
+    subop_cast_u32_to_f32 = 39,
+    subop_cast_i32_to_f64 = 40,
+    subop_cast_u32_to_f64 = 41,
 
-    subop_cast_i64_f32 = 42,
-    subop_cast_u64_f32 = 43,
-    subop_cast_i64_f64 = 44,
-    subop_cast_u64_f64 = 45,
+    subop_cast_i64_to_f32 = 42,
+    subop_cast_u64_to_f32 = 43,
+    subop_cast_i64_to_f64 = 44,
+    subop_cast_u64_to_f64 = 45,
 
-    subop_cast_f32_i32 = 46,
-    subop_cast_f32_u32 = 47,
-    subop_cast_f32_i64 = 48,
-    subop_cast_f32_u64 = 49,
+    subop_cast_f32_to_i32 = 46,
+    subop_cast_f32_to_u32 = 47,
+    subop_cast_f32_to_i64 = 48,
+    subop_cast_f32_to_u64 = 49,
 
-    subop_cast_f64_i32 = 50,
-    subop_cast_f64_u32 = 51,
-    subop_cast_f64_i64 = 52,
-    subop_cast_f64_u64 = 53,
+    subop_cast_f64_to_i32 = 50,
+    subop_cast_f64_to_u32 = 51,
+    subop_cast_f64_to_i64 = 52,
+    subop_cast_f64_to_u64 = 53,
 
     // -------------------------------数据加载、存储子码-----------------------------
     subop_load_w32_i8 = 0,
@@ -145,6 +145,11 @@ enum SubOPEnum
     subop_store_w64_f64 = 32,
 
     subop_store_ptr = 33,
+
+    // 偏移量为立即数
+    // op_ldst_r4_subop  ： 8-8-4-4-uimm8
+    // op_ldst_r8_subop  ： 8-8-8-8-uimm16
+    // op_ldst_r16_subop ： 8-8-16-16-uimm16
 
     // -------------------------------数学二地址运算子码-----------------------------
 

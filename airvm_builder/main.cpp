@@ -15,7 +15,7 @@ int main(int argc, const char *argv[])
     double f64 = 9.45679235;
 
     // 开始填充指令
-    /*
+   // /*
     // 4 bit 常量赋值: 8-4-4
       emiter.const_r4_imm4(op_const_w32_r4_i4, 0, -2);
       emiter.const_r4_imm4(op_const_w32_r4_u4, 1, 15);
@@ -86,14 +86,15 @@ int main(int argc, const char *argv[])
 
     emiter.const_r16_imm64(subop_const_w64_r16_f64, 11, *(uint64_t *)&f64);
     emiter.mov_r4(op_mov_w64_r4_f64, 13, 11);
-*/
+//*/
     // 寄存器间赋值: op subop,des,src  : src => des :8-8-8-8
     emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, -1);
     emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32);
     emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, -1);
     emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64);
 
-    /*emiter.mov_r8(subop_mov_w32_sb0, 6, 0);
+   // /*
+    emiter.mov_r8(subop_mov_w32_sb0, 6, 0);
     emiter.mov_r8(subop_mov_w32_ub0, 6, 0);
     emiter.mov_r8(subop_mov_w32_sb1, 6, 0);
     emiter.mov_r8(subop_mov_w32_ub1, 6, 0);
@@ -110,7 +111,7 @@ int main(int argc, const char *argv[])
     emiter.mov_r8(subop_mov_w32_i32, 6, 0);
     emiter.mov_r8(subop_mov_w32_u32, 6, 0);
     emiter.mov_r8(subop_mov_w32_f32, 6, 1);
-    emiter.mov_r8(subop_bitcast_w32, 6, 1);*/
+    emiter.mov_r8(subop_bitcast_w32, 6, 1);
 
     emiter.mov_r8(subop_mov_w64_sb0, 6, 0);
     emiter.mov_r8(subop_mov_w64_ub0, 6, 0);
@@ -130,8 +131,36 @@ int main(int argc, const char *argv[])
     emiter.mov_r8(subop_mov_w64_u64, 6, 2);
     emiter.mov_r8(subop_mov_w64_f64, 6, 4);
     emiter.mov_r8(subop_bitcast_w64, 6, 4);
+    
 
+    emiter.mov_r8(subop_cast_i32_to_i64, 6, 0);
+    emiter.mov_r8(subop_cast_u32_to_u64, 8, 0);
+    emiter.mov_r8(subop_cast_i64_to_i32, 10, 6);
+    emiter.mov_r8(subop_cast_u64_to_u32, 10, 8);
 
+    emiter.mov_r8(subop_cast_f32_to_f64, 6, 1);
+    emiter.mov_r8(subop_cast_f64_to_f32, 8, 6);
+    //*/
+
+    emiter.mov_r8(subop_cast_i32_to_f32, 6, 0);
+    emiter.mov_r8(subop_cast_u32_to_f32, 8, 0);
+    emiter.mov_r8(subop_cast_i32_to_f64, 6, 0);
+    emiter.mov_r8(subop_cast_u32_to_f64, 6, 0);
+
+    emiter.mov_r8(subop_cast_i64_to_f32, 6, 2);
+    emiter.mov_r8(subop_cast_u64_to_f32, 8, 2);
+    emiter.mov_r8(subop_cast_i64_to_f64, 6, 2);
+    emiter.mov_r8(subop_cast_u64_to_f64, 6, 2);
+
+    emiter.mov_r8(subop_cast_f32_to_i32, 6, 1);
+    emiter.mov_r8(subop_cast_f32_to_u32, 8, 1);
+    emiter.mov_r8(subop_cast_f32_to_i64, 6, 1);
+    emiter.mov_r8(subop_cast_f32_to_u64, 6, 1);
+
+    emiter.mov_r8(subop_cast_f64_to_i32, 6, 4);
+    emiter.mov_r8(subop_cast_f64_to_u32, 8, 4);
+    emiter.mov_r8(subop_cast_f64_to_i64, 6, 4);
+    emiter.mov_r8(subop_cast_f64_to_u64, 6, 4);
 
     // 更新值
     auto data = emiter.code.buffer.data();
