@@ -161,7 +161,7 @@ int main(int argc, const char *argv[])
        emiter.mov_r8(subop_cast_f64_to_u32, 8, 4);
        emiter.mov_r8(subop_cast_f64_to_i64, 6, 4);
        emiter.mov_r8(subop_cast_f64_to_u64, 6, 4);
-   */
+
     emiter.mov_r16(subop_mov_w32_sb0, 6, 0);
     emiter.mov_r16(subop_mov_w32_ub0, 6, 0);
     emiter.mov_r16(subop_mov_w32_sb1, 6, 0);
@@ -227,6 +227,94 @@ int main(int argc, const char *argv[])
     emiter.mov_r16(subop_cast_f64_to_u32, 8, 4);
     emiter.mov_r16(subop_cast_f64_to_i64, 6, 4);
     emiter.mov_r16(subop_cast_f64_to_u64, 6, 4);
+    */
+
+    emiter.math_r8(subop_math2_not_w32, 6, 0);
+    emiter.math_r8(subop_math2_not_w64, 6, 2);
+
+    emiter.math_r8(subop_math2_neg_i32, 6, 0);
+    emiter.math_r8(subop_math2_abs_i32, 6, 0);
+
+    emiter.math_r8(subop_math2_neg_i64, 6, 2);
+    emiter.math_r8(subop_math2_abs_i64, 6, 2);
+
+    emiter.math_r8(subop_math2_neg_f32, 6, 1);
+    emiter.math_r8(subop_math2_abs_f32, 6, 6);
+
+    emiter.math_r8(subop_math2_neg_f64, 6, 4);
+    emiter.math_r8(subop_math2_abs_f64, 6, 6);
+
+    emiter.math_r8(subop_math2_cmpltz_i32, 6, 0);
+    emiter.math_r8(subop_math2_cmplez_i32, 6, 0);
+    emiter.math_r8(subop_math2_cmpeqz_i32, 6, 0);
+    emiter.math_r8(subop_math2_cmpnez_i32, 6, 0);
+    emiter.math_r8(subop_math2_cmpgtz_i32, 6, 0);
+    emiter.math_r8(subop_math2_cmpgez_i32, 6, 0);
+
+    emiter.math_r8(subop_math2_cmpltz_i64, 6, 2);
+    emiter.math_r8(subop_math2_cmplez_i64, 6, 2);
+    emiter.math_r8(subop_math2_cmpeqz_i64, 6, 2);
+    emiter.math_r8(subop_math2_cmpnez_i64, 6, 2);
+    emiter.math_r8(subop_math2_cmpgtz_i64, 6, 2);
+    emiter.math_r8(subop_math2_cmpgez_i64, 6, 2);
+
+    emiter.math_r8(subop_math2_cmpltz_f32, 6, 1);
+    emiter.math_r8(subop_math2_cmplez_f32, 6, 1);
+    emiter.math_r8(subop_math2_cmpeqz_f32, 6, 1);
+    emiter.math_r8(subop_math2_cmpnez_f32, 6, 1);
+    emiter.math_r8(subop_math2_cmpgtz_f32, 6, 1);
+    emiter.math_r8(subop_math2_cmpgez_f32, 6, 1);
+
+    emiter.math_r8(subop_math2_cmpltz_f64, 6, 4);
+    emiter.math_r8(subop_math2_cmplez_f64, 6, 4);
+    emiter.math_r8(subop_math2_cmpeqz_f64, 6, 4);
+    emiter.math_r8(subop_math2_cmpnez_f64, 6, 4);
+    emiter.math_r8(subop_math2_cmpgtz_f64, 6, 4);
+    emiter.math_r8(subop_math2_cmpgez_f64, 6, 4);
+
+    emiter.math_r16(subop_math2_not_w32, 6, 0);
+    emiter.math_r16(subop_math2_not_w64, 6, 2);
+
+    emiter.math_r16(subop_math2_neg_i32, 6, 0);
+    emiter.math_r16(subop_math2_abs_i32, 6, 0);
+
+    emiter.math_r16(subop_math2_neg_i64, 6, 2);
+    emiter.math_r16(subop_math2_abs_i64, 6, 2);
+
+    emiter.math_r16(subop_math2_neg_f32, 6, 1);
+    emiter.math_r16(subop_math2_abs_f32, 6, 6);
+
+    emiter.math_r16(subop_math2_neg_f64, 6, 4);
+    emiter.math_r16(subop_math2_abs_f64, 6, 6);
+
+    emiter.math_r16(subop_math2_cmpltz_i32, 6, 0);
+    emiter.math_r16(subop_math2_cmplez_i32, 6, 0);
+    emiter.math_r16(subop_math2_cmpeqz_i32, 6, 0);
+    emiter.math_r16(subop_math2_cmpnez_i32, 6, 0);
+    emiter.math_r16(subop_math2_cmpgtz_i32, 6, 0);
+    emiter.math_r16(subop_math2_cmpgez_i32, 6, 0);
+
+    emiter.math_r16(subop_math2_cmpltz_i64, 6, 2);
+    emiter.math_r16(subop_math2_cmplez_i64, 6, 2);
+    emiter.math_r16(subop_math2_cmpeqz_i64, 6, 2);
+    emiter.math_r16(subop_math2_cmpnez_i64, 6, 2);
+    emiter.math_r16(subop_math2_cmpgtz_i64, 6, 2);
+    emiter.math_r16(subop_math2_cmpgez_i64, 6, 2);
+
+    emiter.math_r16(subop_math2_cmpltz_f32, 6, 1);
+    emiter.math_r16(subop_math2_cmplez_f32, 6, 1);
+    emiter.math_r16(subop_math2_cmpeqz_f32, 6, 1);
+    emiter.math_r16(subop_math2_cmpnez_f32, 6, 1);
+    emiter.math_r16(subop_math2_cmpgtz_f32, 6, 1);
+    emiter.math_r16(subop_math2_cmpgez_f32, 6, 1);
+
+    emiter.math_r16(subop_math2_cmpltz_f64, 6, 4);
+    emiter.math_r16(subop_math2_cmplez_f64, 6, 4);
+    emiter.math_r16(subop_math2_cmpeqz_f64, 6, 4);
+    emiter.math_r16(subop_math2_cmpnez_f64, 6, 4);
+    emiter.math_r16(subop_math2_cmpgtz_f64, 6, 4);
+    emiter.math_r16(subop_math2_cmpgez_f64, 6, 4);
+
     // 更新值
     auto data = emiter.code.buffer.data();
     *(uint16_t *)data = 24;

@@ -151,6 +151,46 @@ enum SubOPEnum
     // op_ldst_r8_subop  ： 8-8-8-8-uimm16
     // op_ldst_r16_subop ： 8-8-16-16-uimm16
 
+    subop_load_imm_w32_i8 = 34,
+    subop_load_imm_w32_u8 = 35,
+    subop_load_imm_w32_i16 = 36,
+    subop_load_imm_w32_u16 = 37,
+    subop_load_imm_w32_i32 = 38,
+    subop_load_imm_w32_u32 = 39,
+    subop_load_imm_w32_f32 = 40,
+
+    subop_load_imm_w64_i8 = 41,
+    subop_load_imm_w64_u8 = 42,
+    subop_load_imm_w64_i16 = 43,
+    subop_load_imm_w64_u16 = 44,
+    subop_load_imm_w64_i32 = 45,
+    subop_load_imm_w64_u32 = 46,
+    subop_load_imm_w64_i64 = 47,
+    subop_load_imm_w64_u64 = 48,
+    subop_load_imm_w64_f64 = 49,
+
+    subop_load_imm_ptr = 50,
+
+    subop_store_imm_w32_i8 = 51,
+    subop_store_imm_w32_u8 = 52,
+    subop_store_imm_w32_i16 = 53,
+    subop_store_imm_w32_u16 = 54,
+    subop_store_imm_w32_i32 = 55,
+    subop_store_imm_w32_u32 = 56,
+    subop_store_imm_w32_f32 = 57,
+
+    subop_store_imm_w64_i8 = 58,
+    subop_store_imm_w64_u8 = 59,
+    subop_store_imm_w64_i16 = 60,
+    subop_store_imm_w64_u16 = 61,
+    subop_store_imm_w64_i32 = 62,
+    subop_store_imm_w64_u32 = 63,
+    subop_store_imm_w64_i64 = 64,
+    subop_store_imm_w64_u64 = 65,
+    subop_store_imm_w64_f64 = 66,
+
+    subop_store_imm_ptr = 67,
+
     // -------------------------------数学二地址运算子码-----------------------------
 
     // 一元算术运算
@@ -175,26 +215,12 @@ enum SubOPEnum
     subop_math2_cmpgtz_i32,
     subop_math2_cmpgez_i32,
 
-    subop_math2_cmpltz_u32,
-    subop_math2_cmplez_u32,
-    subop_math2_cmpeqz_u32,
-    subop_math2_cmpnez_u32,
-    subop_math2_cmpgtz_u32,
-    subop_math2_cmpgez_u32,
-
     subop_math2_cmpltz_i64,
     subop_math2_cmplez_i64,
     subop_math2_cmpeqz_i64,
     subop_math2_cmpnez_i64,
     subop_math2_cmpgtz_i64,
     subop_math2_cmpgez_i64,
-
-    subop_math2_cmpltz_u64,
-    subop_math2_cmplez_u64,
-    subop_math2_cmpeqz_u64,
-    subop_math2_cmpnez_u64,
-    subop_math2_cmpgtz_u64,
-    subop_math2_cmpgez_u64,
 
     subop_math2_cmpltz_f32,
     subop_math2_cmplez_f32,
@@ -219,10 +245,10 @@ enum SubOPEnum
     subop_math2_tan_f64,
     subop_math2_cot_f32, // 余切
     subop_math2_cot_f64,
-    subop_math2_csc_f32, // 余割
-    subop_math2_csc_f64,
     subop_math2_sec_f32, // 正割
     subop_math2_sec_f64,
+    subop_math2_csc_f32, // 余割
+    subop_math2_csc_f64,
 
     subop_math2_asin_f32, // 反正弦
     subop_math2_asin_f64,

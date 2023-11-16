@@ -3,6 +3,7 @@
 
 #include <stdatomic.h>
 #include <stdio.h>
+#include <math.h>
 
 // 虚拟机执行器上下文
 struct airvm_actuator
@@ -104,11 +105,20 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
 #include "inline/airvm_mov_r4.inl"
         // 寄存器间赋值:op subop,des,src  : src => des :8-8-8-8
 #include "inline/airvm_mov_r8.inl"
-// 寄存器间赋值:op subop,des,src  : src => des :8-8-16-16
+        // 寄存器间赋值:op subop,des,src  : src => des :8-8-16-16
 #include "inline/airvm_mov_r16.inl"
-        
 
-            // op 默认处理
+        // 数据加载、存储: op subop,des,src,offset
+        /*#include "inline/airvm_ldst_r4.inl"
+        #include "inline/airvm_ldst_r8.inl"
+        #include "inline/airvm_ldst_r16.inl"
+        */
+
+// 数学二地址码：op subop,des,src  : src => des
+#include "inline/airvm_math2_r8.inl"
+#include "inline/airvm_math2_r16.inl"
+
+        // op 默认处理
         default:
             goto _Error_Handle;
             break;

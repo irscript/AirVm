@@ -51,45 +51,50 @@ enum OPEnum
     op_mov_r16_subop = opval(26), // op subop,des,src  : src => des :8-8-16-16
     /* 子码定义：赋值 、类型转换等*/
 
-    // 数据加载、存储: op subop,des,src,offset
-    op_ldst_r4_subop = opval(27),  // 8-8-4-4-4-[4]
-    op_ldst_r8_subop = opval(28),  // 8-8-8-8-8-[8]
-    op_ldst_r16_subop = opval(29), // 8-8-16-16-16
-
     // 数学二地址码：
-    op_math2_r8_subop = opval(30),  // op subop,des,src  : src => des :8-8-8-8
-    op_math2_r16_subop = opval(31), // op subop,des,src  : src => des :8-8-16-16
+    op_math2_r8_subop = opval(27),  // op subop,des,src  : src => des :8-8-8-8
+    op_math2_r16_subop = opval(28), // op subop,des,src  : src => des :8-8-16-16
     /* 子码定义：一元数学运算、三角运算等*/
 
     // 数学三地址码:
-    op_math3_r4_subop = opval(32),  // op subop,des,src,src2  : src subop src2 => des 8-8-8-4-4
-    op_math3_r8_subop = opval(33),  // op subop,des,src,src2  : src subop src2 => des 8-8-16-8-8
-    op_math3_r16_subop = opval(34), // op subop,des,src,src2  : src subop src2 => des 8-8-16-16-16
+    op_math3_r4_subop = opval(29),  // op subop,des,src,src2  : src subop src2 => des 8-8-8-4-4
+    op_math3_r8_subop = opval(30),  // op subop,des,src,src2  : src subop src2 => des 8-8-16-8-8
+    op_math3_r16_subop = opval(31), // op subop,des,src,src2  : src subop src2 => des 8-8-16-16-16
     /*子码定义:算术运算、位运算等*/
 
     // 直接跳转指令 goto imm
-    op_goto_i8 = opval(35),  // 有符号 8 位 相对本指令偏移 8-8
-    op_goto_i24 = opval(36), // 有符号 24 位 相对本指令偏移8-24
-    op_goto_i32 = opval(37), // 有符号 32 位 相对本指令偏移8-8-32
+    op_goto_i8 = opval(32),  // 有符号 8 位 相对本指令偏移 8-8
+    op_goto_i24 = opval(33), // 有符号 24 位 相对本指令偏移8-24
+    op_goto_i32 = opval(34), // 有符号 32 位 相对本指令偏移8-8-32
 
     // 分支跳转指令：jbr subop,src,src2,imm
     //  jbrz subop,src,imm
-    op_jbr_r8_imm16_subop = opval(38),  // jbr subop,src,src2,imm16 : 8-8-8-8-16
-    op_jbr_r8_imm32_subop = opval(39),  // jbr subop,src,src2,imm32 :  8-8-8-8-32
-    op_jbr_r16_imm16_subop = opval(40), // jbr subop,src,src2,imm16 :  8-8-16-16-16
-    op_jbr_r16_imm32_subop = opval(41), // jbr subop,src,src2,imm32 :  8-8-16-16-32
+    op_jbr_r8_imm16_subop = opval(35),  // jbr subop,src,src2,imm16 : 8-8-8-8-16
+    op_jbr_r8_imm32_subop = opval(36),  // jbr subop,src,src2,imm32 :  8-8-8-8-32
+    op_jbr_r16_imm16_subop = opval(37), // jbr subop,src,src2,imm16 :  8-8-16-16-16
+    op_jbr_r16_imm32_subop = opval(38), // jbr subop,src,src2,imm32 :  8-8-16-16-32
     /*子码定义*/
 
     // 返回指令
-    op_return_subop = opval(42), // return subop,reg/imm  : 8-8-*
+    op_return_subop = opval(39), // return subop,reg/imm  : 8-8-*
     /*子码定义*/
+
+    // 数据加载、存储: op subop,des,src,offset
+    // offset代表的寄存器是uint32_t 的值
+    op_ldst_r4_subop = opval(40),  // 8-8-4-4-4-[4], imm8
+    op_ldst_r8_subop = opval(41),  // 8-8-8-8-8-[8], imm16
+    op_ldst_r16_subop = opval(42), // 8-8-16-16-16,imm16
 
     // 返回值获取
     op_getret_r16_subop = opval(43), // getret subop,reg : 8-8-16
-    /*子码定义*/
+                                     /*子码定义*/
 
     // 函数调用指令 : call funcptr[argcnt](arg,arg1,arg2,arg3)
-    op_call_static_func = opval(44),
+    op_call_native_func = opval(44),    // 主机函数调用
+    op_call_static_func = opval(45),    // 静态函数调用
+    op_call_member_func = opval(45),    // 成员函数调用
+    op_call_virtual_func = opval(46),   // 虚函数调用
+    op_call_interface_func = opval(47), // 接口函数调用
 };
 #undef opval
 

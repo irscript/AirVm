@@ -131,6 +131,21 @@ struct Emiter
         code.emiter2(des);
         code.emiter2(src);
     }
+
+    inline void math_r8(uint8_t subop, uint8_t des, uint8_t src)
+    {
+        uint16_t ins = (op_math2_r8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = des << 8 | src;
+        code.emiter2(ins);
+    }
+    inline void math_r16(uint8_t subop, uint16_t des, uint16_t src)
+    {
+        uint16_t ins = (op_math2_r16_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__
