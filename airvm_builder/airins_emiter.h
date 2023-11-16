@@ -65,7 +65,7 @@ struct Emiter
     {
         uint16_t ins = (op_const_r8_subop << 8) | subop;
         code.emiter2(ins);
-        ins = des << 8 | imm;
+        ins = (des << 8) | imm;
         code.emiter2(ins);
     }
     // 16 bit 常量赋值：8-8-16
@@ -121,7 +121,7 @@ struct Emiter
     {
         uint16_t ins = (op_mov_r8_subop << 8) | subop;
         code.emiter2(ins);
-        ins = des << 8 | src;
+        ins = (des << 8) | src;
         code.emiter2(ins);
     }
     inline void mov_r16(uint8_t subop, uint16_t des, uint16_t src)
@@ -136,7 +136,7 @@ struct Emiter
     {
         uint16_t ins = (op_math2_r8_subop << 8) | subop;
         code.emiter2(ins);
-        ins = des << 8 | src;
+        ins = (des << 8) | src;
         code.emiter2(ins);
     }
     inline void math_r16(uint8_t subop, uint16_t des, uint16_t src)
@@ -145,6 +145,30 @@ struct Emiter
         code.emiter2(ins);
         code.emiter2(des);
         code.emiter2(src);
+    }
+
+    inline void math3_r4(uint8_t subop, uint8_t des, uint8_t src, uint8_t src2)
+    {
+        uint16_t ins = (op_math3_r4_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | ((src & 0xF) << 4) | (src2 & 0xF);
+        code.emiter2(ins);
+    }
+    inline void math3_r8(uint8_t subop, uint16_t des, uint8_t src, uint8_t src2)
+    {
+        uint16_t ins = (op_math3_r8_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        ins = (src << 8) | src2;
+        code.emiter2(ins);
+    }
+    inline void math3_r16(uint8_t subop, uint16_t des, uint16_t src, uint16_t src2)
+    {
+        uint16_t ins = (op_math3_r16_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+        code.emiter2(src2);
     }
 };
 

@@ -297,16 +297,16 @@ enum SubOPEnum
     subop_math3_mod_f64,
 
     // 逻辑与、或
-    subop_math3_land_b32, // 位与
+    subop_math3_land_b32, // 逻辑与
     subop_math3_land_b64,
-    subop_math3_lor_b32, // 位或
+    subop_math3_lor_b32, // 逻辑或
     subop_math3_lor_b64,
 
     // 位移
     subop_math3_shl_b32, // 左移
     subop_math3_shl_b64,
-    subop_math3_shr_b32, // 右移
-    subop_math3_shr_b64,
+    subop_math3_lshr_b32, // 右移
+    subop_math3_lshr_b64,
     subop_math3_ashr_b32, // 算术右移
     subop_math3_ashr_b64,
     subop_math3_rol_b32, // 循环左移
@@ -373,14 +373,14 @@ enum SubOPEnum
     subop_math3_cmpgt_f64,
     subop_math3_cmpge_f64,
 
-    // 最大最小
+    // 最大
     subop_math3_max_i32,
     subop_math3_max_u32,
     subop_math3_max_i64,
     subop_math3_max_u64,
     subop_math3_max_f32,
     subop_math3_max_f64,
-
+    // 最小
     subop_math3_min_i32,
     subop_math3_min_u32,
     subop_math3_min_i64,

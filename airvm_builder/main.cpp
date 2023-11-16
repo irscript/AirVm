@@ -88,10 +88,12 @@ int main(int argc, const char *argv[])
      emiter.mov_r4(op_mov_w64_r4_f64, 13, 11);
  */
     // 寄存器间赋值: op subop,des,src  : src => des :8-8-8-8
-    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, -1);
-    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32);
-    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, -1);
-    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64);
+    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, -1);                // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32); // 1
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, -1);                // 2~3
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64); // 4~5
+
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 16, 8); // 16~17
 
     /*
        emiter.mov_r8(subop_mov_w32_sb0, 6, 0);
@@ -227,7 +229,6 @@ int main(int argc, const char *argv[])
     emiter.mov_r16(subop_cast_f64_to_u32, 8, 4);
     emiter.mov_r16(subop_cast_f64_to_i64, 6, 4);
     emiter.mov_r16(subop_cast_f64_to_u64, 6, 4);
-    */
 
     emiter.math_r8(subop_math2_not_w32, 6, 0);
     emiter.math_r8(subop_math2_not_w64, 6, 2);
@@ -314,7 +315,109 @@ int main(int argc, const char *argv[])
     emiter.math_r16(subop_math2_cmpnez_f64, 6, 4);
     emiter.math_r16(subop_math2_cmpgtz_f64, 6, 4);
     emiter.math_r16(subop_math2_cmpgez_f64, 6, 4);
+    */
 
+    {
+        emiter.math3_r4(subop_math3_add_i32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_sub_i32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_mul_i32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_div_i32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_mod_i32, 6, 0, 0);
+
+        emiter.math3_r4(subop_math3_add_u32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_sub_u32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_mul_u32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_div_u32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_mod_u32, 6, 0, 0);
+
+        emiter.math3_r4(subop_math3_add_i64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_sub_i64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_mul_i64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_div_i64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_mod_i64, 6, 2, 2);
+
+        emiter.math3_r4(subop_math3_add_u64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_sub_u64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_mul_u64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_div_u64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_mod_u64, 6, 2, 2);
+
+        emiter.math3_r4(subop_math3_add_f32, 6, 1, 1);
+        emiter.math3_r4(subop_math3_sub_f32, 6, 1, 1);
+        emiter.math3_r4(subop_math3_mul_f32, 6, 1, 1);
+        emiter.math3_r4(subop_math3_div_f32, 6, 1, 1);
+        emiter.math3_r4(subop_math3_mod_f32, 6, 1, 1);
+
+        emiter.math3_r4(subop_math3_add_f64, 6, 4, 4);
+        emiter.math3_r4(subop_math3_sub_f64, 6, 4, 4);
+        emiter.math3_r4(subop_math3_mul_f64, 6, 4, 4);
+        emiter.math3_r4(subop_math3_div_f64, 6, 4, 4);
+        emiter.math3_r4(subop_math3_mod_f64, 6, 4, 4);
+    }
+    {
+        emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15);                // 0
+        emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32); // 1
+        emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15);                // 2~3
+        emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64); // 4~5
+
+        emiter.const_r16_imm64(subop_const_w64_r16_u64, 14, 8); // 14~15
+
+        emiter.math3_r4(subop_math3_land_b32, 6, 0, 20);
+        emiter.math3_r4(subop_math3_land_b64, 6, 2, 20);
+        emiter.math3_r4(subop_math3_lor_b32, 6, 0, 20);
+        emiter.math3_r4(subop_math3_lor_b64, 6, 2, 20);
+
+        emiter.math3_r4(subop_math3_shl_b32, 6, 0, 14);
+        emiter.math3_r4(subop_math3_shl_b64, 6, 2, 14);
+        emiter.math3_r4(subop_math3_lshr_b32, 6, 0, 14);
+        emiter.math3_r4(subop_math3_lshr_b64, 6, 2, 14);
+        emiter.math3_r4(subop_math3_ashr_b32, 6, 0, 14);
+        emiter.math3_r4(subop_math3_ashr_b64, 6, 2, 14);
+
+        emiter.math3_r4(subop_math3_rol_b32, 6, 0, 14);
+        emiter.math3_r4(subop_math3_rol_b64, 6, 2, 14);
+        emiter.math3_r4(subop_math3_ror_b32, 6, 0, 14);
+        emiter.math3_r4(subop_math3_ror_b64, 6, 2, 14);
+    }
+    {
+        emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, -1);                // 0
+        emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32); // 1
+        emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, -1);                // 2~3
+        emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64); // 4~5
+
+        emiter.math3_r4(subop_math3_and_b32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_and_b64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_or_b32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_or_b64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_xor_b32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_xor_b64, 6, 2, 2);
+
+        emiter.math3_r4(subop_math3_andn_b32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_andn_b64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_orn_b32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_orn_b64, 6, 2, 2);
+        emiter.math3_r4(subop_math3_xorn_b32, 6, 0, 0);
+        emiter.math3_r4(subop_math3_xorn_b64, 6, 2, 2);
+    }
+    {
+        emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, -1);                // 0
+        emiter.const_r16_imm32(subop_const_w32_r16_u32, 1, 15);                // 1
+
+        emiter.math3_r4(subop_math3_cmplt_i32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmple_i32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpeq_i32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpne_i32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpgt_i32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpge_i32, 6, 0, 1);
+
+        emiter.math3_r4(subop_math3_cmplt_u32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmple_u32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpeq_u32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpne_u32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpgt_u32, 6, 0, 1);
+        emiter.math3_r4(subop_math3_cmpge_u32, 6, 0, 1);
+
+    }
     // 更新值
     auto data = emiter.code.buffer.data();
     *(uint16_t *)data = 24;
