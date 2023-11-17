@@ -2,6 +2,11 @@ add_rules("mode.debug", "mode.release")
 
 set_languages("c17", "c++17")
 
+if(is_mode("release")) then
+    set_optimize("fastest")
+    add_cxflags("-O3")
+end
+
 --运行时库
 target("airvm_runtime")
     set_kind("shared")

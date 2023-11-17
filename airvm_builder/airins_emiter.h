@@ -4,10 +4,8 @@
 #include <vector>
 #include <cstdint>
 #include <stdio.h>
-
-#define opval(val) val
 #include <airvm_opcode.h>
-#undef opval
+
 
 // 小端序列
 struct airvm_code_file_t
