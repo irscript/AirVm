@@ -64,9 +64,20 @@ enum OPEnum
     op_goto_i8,  // 有符号 8 位 相对本指令偏移 8-8
     op_goto_i24, // 有符号 24 位 相对本指令偏移8-24
     op_goto_i32, // 有符号 32 位 相对本指令偏移8-8-32
+    
+    // 跳表跳转 goto ir imm
+    //op_goto_tab, 
+
+    // 分支跳转指令：jbrz subop,src,imm
+    op_jbrz_r4_imm12_subop,  // jbr subop,src,imm12 : 8-8-4-12
+    op_jbrz_r8_imm8_subop,   // jbr subop,src,imm8 : 8-8-8-8
+    op_jbrz_r8_imm24_subop,  // jbr subop,src,imm24 :  8-8-8-24
+    op_jbrz_r16_imm16_subop, // jbr subop,src,imm16 :  8-8-16-16
+    op_jbrz_r16_imm32_subop, // jbr subop,src,imm32 :  8-8-16-32
+    /*子码定义*/
 
     // 分支跳转指令：jbr subop,src,src2,imm
-    //  jbrz subop,src,imm
+    op_jbr_r4_imm8_subop,   // jbr subop,src,src2,imm8 : 8-8-4-4-8
     op_jbr_r8_imm16_subop,  // jbr subop,src,src2,imm16 : 8-8-8-8-16
     op_jbr_r8_imm32_subop,  // jbr subop,src,src2,imm32 :  8-8-8-8-32
     op_jbr_r16_imm16_subop, // jbr subop,src,src2,imm16 :  8-8-16-16-16

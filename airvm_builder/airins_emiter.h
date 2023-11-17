@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <airvm_opcode.h>
 
-
 // 小端序列
 struct airvm_code_file_t
 {
@@ -167,6 +166,64 @@ struct Emiter
         code.emiter2(des);
         code.emiter2(src);
         code.emiter2(src2);
+    }
+
+    inline void goto_i8(uint8_t imm)
+    {
+        uint16_t ins = (op_goto_i8 << 8) | imm;
+        code.emiter2(ins);
+    }
+    inline void goto_i24(uint32_t imm)
+    {
+        imm &= 0xFFFFFF;
+        uint16_t ins = (op_goto_i24 << 8) | (imm & 0xFF);
+        code.emiter2(ins);
+        code.emiter2(imm >> 8);
+    }
+    inline void goto_i32(uint32_t imm)
+    {
+        uint16_t ins = (op_goto_i32 << 8);
+        code.emiter2(ins);
+        code.emiter4(imm);
+    }
+
+    inline void jbrz_r4_imm12(uint8_t subop, uint8_t src, uint16_t imm)
+    {
+        uint16_t ins = (op_jbrz_r4_imm12_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = ((src & 0xF) << 12) | (imm & 0xFFF);
+        code.emiter2(ins);
+    }
+    inline void jbrz_r8_imm8(uint8_t subop, uint8_t src, uint8_t imm)
+    {
+        uint16_t ins = (op_jbrz_r8_imm8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (src << 8) | imm;
+        code.emiter2(ins);
+    }
+    inline void jbrz_r8_imm24(uint8_t subop, uint8_t src, uint32_t imm)
+    {
+        uint16_t ins = (op_jbrz_r8_imm24_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = src << 8 | (imm & 0xFF);
+        code.emiter2(ins);
+        ins = imm >> 8;
+        code.emiter2(ins);
+    }
+    inline void jbrz_r16_imm16(uint8_t subop, uint16_t src, uint16_t imm)
+    {
+        uint16_t ins = (op_jbrz_r16_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(src);
+        code.emiter2(imm);
+    }
+    inline void jbrz_r16_imm32(uint8_t subop, uint16_t src, uint32_t imm)
+    {
+        uint16_t ins = (op_jbrz_r16_imm32_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(src);
+        code.emiter2(imm);
+        code.emiter2(imm >> 16);
     }
 };
 

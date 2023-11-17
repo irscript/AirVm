@@ -5,191 +5,191 @@ enum SubOPEnum
 {
     // 8 bits 常量赋值 子码
     // op subop,des,imm  : subop( imm4 )  => des
-    subop_const_w32_r8_b0 = 0,     // imm 存放在寄存器的第 1 个字节
-    subop_const_w32_r8_b1 = 1,     // imm 存放在寄存器的第 2 个字节
-    subop_const_w32_r8_b2 = 2,     // imm 存放在寄存器的第 3 个字节
-    subop_const_w32_r8_b3 = 3,     // imm 存放在寄存器的第 4 个字节
-    subop_const_w32_r8_i8 = 4,     // imm 有符号扩展到 32 位
-    subop_const_w32_r8_u8 = 5,     // imm 无符号扩展到 32 位
-    subop_const_w32_r8_h16_i8 = 6, // imm 有符号扩展到 16 位,存放在寄存器 高 16 位
-    subop_const_w32_r8_h16_u8 = 7, // imm 无符号扩展到 16 位,存放在寄存器 高 16 位
-    subop_const_w32_r8_l16_i8 = 8, // imm 有符号扩展到 16 位,存放在寄存器 低 1 6位
-    subop_const_w32_r8_l16_u8 = 9, // imm 无符号扩展到 16 位,存放在寄存器 低 16 位
-    subop_const_w64_r8_i8 = 10,    // imm 有符号扩展到 64 位
-    subop_const_w64_r8_u8 = 11,    // imm 无符号扩展到 64 位
+    subop_const_w32_r8_b0 = 0, // imm 存放在寄存器的第 1 个字节
+    subop_const_w32_r8_b1,     // imm 存放在寄存器的第 2 个字节
+    subop_const_w32_r8_b2,     // imm 存放在寄存器的第 3 个字节
+    subop_const_w32_r8_b3,     // imm 存放在寄存器的第 4 个字节
+    subop_const_w32_r8_i8,     // imm 有符号扩展到 32 位
+    subop_const_w32_r8_u8,     // imm 无符号扩展到 32 位
+    subop_const_w32_r8_h16_i8, // imm 有符号扩展到 16 位,存放在寄存器 高 16 位
+    subop_const_w32_r8_h16_u8, // imm 无符号扩展到 16 位,存放在寄存器 高 16 位
+    subop_const_w32_r8_l16_i8, // imm 有符号扩展到 16 位,存放在寄存器 低 1 6位
+    subop_const_w32_r8_l16_u8, // imm 无符号扩展到 16 位,存放在寄存器 低 16 位
+    subop_const_w64_r8_i8,     // imm 有符号扩展到 64 位
+    subop_const_w64_r8_u8,     // imm 无符号扩展到 64 位
 
     // -------------------------------16/32/64 bit 常量赋值子码-----------------------------
     subop_const_w32_r16_i16 = 0, // 8-8-16-16
-    subop_const_w32_r16_u16 = 1, // 8-8-16-16
-    subop_const_w32_r16_i32 = 2, // 8-8-16-32
-    subop_const_w32_r16_u32 = 3, // 8-8-16-32
-    subop_const_w32_r16_f32 = 4, // 8-8-16-32
+    subop_const_w32_r16_u16,     // 8-8-16-16
+    subop_const_w32_r16_i32,     // 8-8-16-32
+    subop_const_w32_r16_u32,     // 8-8-16-32
+    subop_const_w32_r16_f32,     // 8-8-16-32
 
-    subop_const_w64_r16_i16 = 5,  // 8-8-16-16
-    subop_const_w64_r16_u16 = 6,  // 8-8-16-16
-    subop_const_w64_r16_i32 = 7,  // 8-8-16-32
-    subop_const_w64_r16_u32 = 8,  // 8-8-16-32
-    subop_const_w64_r16_i64 = 9,  // 8-8-16-64
-    subop_const_w64_r16_u64 = 10, // 8-8-16-64
-    subop_const_w64_r16_f64 = 11, // 8-8-16-64
+    subop_const_w64_r16_i16, // 8-8-16-16
+    subop_const_w64_r16_u16, // 8-8-16-16
+    subop_const_w64_r16_i32, // 8-8-16-32
+    subop_const_w64_r16_u32, // 8-8-16-32
+    subop_const_w64_r16_i64, // 8-8-16-64
+    subop_const_w64_r16_u64, // 8-8-16-64
+    subop_const_w64_r16_f64, // 8-8-16-64
 
     // -------------------------------寄存器间赋值、转换运算子码-----------------------------
     // 32 bit 赋值
     subop_mov_w32_sb0 = 0, // 获取寄存器的第 1 个字节，进行符号扩展到 32 位
-    subop_mov_w32_ub0 = 1, // 获取寄存器的第 1 个字节，进行零扩展到 32 位
-    subop_mov_w32_sb1 = 2, // 获取寄存器的第 2 个字节，进行符号扩展到 32 位
-    subop_mov_w32_ub1 = 3, // 获取寄存器的第 2 个字节，进行零扩展到 32 位
-    subop_mov_w32_sb2 = 4, // 获取寄存器的第 3 个字节，进行符号扩展到 32 位
-    subop_mov_w32_ub2 = 5, // 获取寄存器的第 3 个字节，进行零扩展到 32 位
-    subop_mov_w32_sb3 = 6, // 获取寄存器的第 4 个字节，进行符号扩展到 32 位
-    subop_mov_w32_ub3 = 7, // 获取寄存器的第 4 个字节，进行零扩展到 32 位
+    subop_mov_w32_ub0,     // 获取寄存器的第 1 个字节，进行零扩展到 32 位
+    subop_mov_w32_sb1,     // 获取寄存器的第 2 个字节，进行符号扩展到 32 位
+    subop_mov_w32_ub1,     // 获取寄存器的第 2 个字节，进行零扩展到 32 位
+    subop_mov_w32_sb2,     // 获取寄存器的第 3 个字节，进行符号扩展到 32 位
+    subop_mov_w32_ub2,     // 获取寄存器的第 3 个字节，进行零扩展到 32 位
+    subop_mov_w32_sb3,     // 获取寄存器的第 4 个字节，进行符号扩展到 32 位
+    subop_mov_w32_ub3,     // 获取寄存器的第 4 个字节，进行零扩展到 32 位
 
-    subop_mov_w32_sh16 = 8,  // 获取寄存器的高 16 位，进行符号扩展到 32 位
-    subop_mov_w32_uh16 = 9,  // 获取寄存器的高 16 位，进行零扩展到 32 位
-    subop_mov_w32_sl16 = 10, // 获取寄存器的低 16 位，进行符号扩展到 32 位
-    subop_mov_w32_ul16 = 11, // 获取寄存器的低 16 位，进行零扩展到 32 位
+    subop_mov_w32_sh16, // 获取寄存器的高 16 位，进行符号扩展到 32 位
+    subop_mov_w32_uh16, // 获取寄存器的高 16 位，进行零扩展到 32 位
+    subop_mov_w32_sl16, // 获取寄存器的低 16 位，进行符号扩展到 32 位
+    subop_mov_w32_ul16, // 获取寄存器的低 16 位，进行零扩展到 32 位
 
-    subop_mov_w32_i32 = 12, // 32 位原值拷贝传递,不过源值为 int32
-    subop_mov_w32_u32 = 13, // 32 位原值拷贝传递,不过源值为 uint32
-    subop_mov_w32_f32 = 14, // 32 位原值拷贝传递,不过源值为 flt32
-    subop_bitcast_w32 = 15, // 32 位原值拷贝传递,不过标明是位转换
+    subop_mov_w32_i32, // 32 位原值拷贝传递,不过源值为 int32
+    subop_mov_w32_u32, // 32 位原值拷贝传递,不过源值为 uint32
+    subop_mov_w32_f32, // 32 位原值拷贝传递,不过源值为 flt32
+    subop_bitcast_w32, // 32 位原值拷贝传递,不过标明是位转换
 
     // 64 bit 赋值
-    subop_mov_w64_sb0 = 16, // 获取寄存器的第 1 个字节，进行符号扩展到 64 位
-    subop_mov_w64_ub0 = 17, // 获取寄存器的第 1 个字节，进行零扩展到 64 位
-    subop_mov_w64_sb1 = 18, // 获取寄存器的第 2 个字节，进行符号扩展到 64 位
-    subop_mov_w64_ub1 = 19, // 获取寄存器的第 2 个字节，进行零扩展到 64 位
-    subop_mov_w64_sb2 = 20, // 获取寄存器的第 3 个字节，进行符号扩展到 64 位
-    subop_mov_w64_ub2 = 21, // 获取寄存器的第 3 个字节，进行零扩展到 64 位
-    subop_mov_w64_sb3 = 22, // 获取寄存器的第 4 个字节，进行符号扩展到 64 位
-    subop_mov_w64_ub3 = 23, // 获取寄存器的第 4 个字节，进行零扩展到 64 位
+    subop_mov_w64_sb0, // 获取寄存器的第 1 个字节，进行符号扩展到 64 位
+    subop_mov_w64_ub0, // 获取寄存器的第 1 个字节，进行零扩展到 64 位
+    subop_mov_w64_sb1, // 获取寄存器的第 2 个字节，进行符号扩展到 64 位
+    subop_mov_w64_ub1, // 获取寄存器的第 2 个字节，进行零扩展到 64 位
+    subop_mov_w64_sb2, // 获取寄存器的第 3 个字节，进行符号扩展到 64 位
+    subop_mov_w64_ub2, // 获取寄存器的第 3 个字节，进行零扩展到 64 位
+    subop_mov_w64_sb3, // 获取寄存器的第 4 个字节，进行符号扩展到 64 位
+    subop_mov_w64_ub3, // 获取寄存器的第 4 个字节，进行零扩展到 64 位
 
-    subop_mov_w64_sh16 = 24, // 获取寄存器的高 16 位，进行符号扩展到 64 位
-    subop_mov_w64_uh16 = 25, // 获取寄存器的高 16 位，进行零扩展到 64 位
-    subop_mov_w64_sl16 = 26, // 获取寄存器的低 16 位，进行符号扩展到 64 位
-    subop_mov_w64_ul16 = 27, // 获取寄存器的低 16 位，进行零扩展到 64 位
+    subop_mov_w64_sh16, // 获取寄存器的高 16 位，进行符号扩展到 64 位
+    subop_mov_w64_uh16, // 获取寄存器的高 16 位，进行零扩展到 64 位
+    subop_mov_w64_sl16, // 获取寄存器的低 16 位，进行符号扩展到 64 位
+    subop_mov_w64_ul16, // 获取寄存器的低 16 位，进行零扩展到 64 位
 
-    subop_mov_w64_i64 = 28, // 64 位原值拷贝传递,不过源值为 int64
-    subop_mov_w64_u64 = 29, // 64 位原值拷贝传递,不过源值为 uint64
-    subop_mov_w64_f64 = 30, // 64 位原值拷贝传递,不过源值为 flt64
-    subop_bitcast_w64 = 31, // 64 位原值拷贝传递,不过标明是位转换
+    subop_mov_w64_i64, // 64 位原值拷贝传递,不过源值为 int64
+    subop_mov_w64_u64, // 64 位原值拷贝传递,不过源值为 uint64
+    subop_mov_w64_f64, // 64 位原值拷贝传递,不过源值为 flt64
+    subop_bitcast_w64, // 64 位原值拷贝传递,不过标明是位转换
 
     // 整数间类型转换
-    subop_cast_i32_to_i64 = 32,
-    subop_cast_u32_to_u64 = 33,
-    subop_cast_i64_to_i32 = 34,
-    subop_cast_u64_to_u32 = 35,
+    subop_cast_i32_to_i64,
+    subop_cast_u32_to_u64,
+    subop_cast_i64_to_i32,
+    subop_cast_u64_to_u32,
 
     // 浮点间类型转换
-    subop_cast_f32_to_f64 = 36,
-    subop_cast_f64_to_f32 = 37,
+    subop_cast_f32_to_f64,
+    subop_cast_f64_to_f32,
 
     // 整数、浮点间类型转换
-    subop_cast_i32_to_f32 = 38,
-    subop_cast_u32_to_f32 = 39,
-    subop_cast_i32_to_f64 = 40,
-    subop_cast_u32_to_f64 = 41,
+    subop_cast_i32_to_f32,
+    subop_cast_u32_to_f32,
+    subop_cast_i32_to_f64,
+    subop_cast_u32_to_f64,
 
-    subop_cast_i64_to_f32 = 42,
-    subop_cast_u64_to_f32 = 43,
-    subop_cast_i64_to_f64 = 44,
-    subop_cast_u64_to_f64 = 45,
+    subop_cast_i64_to_f32,
+    subop_cast_u64_to_f32,
+    subop_cast_i64_to_f64,
+    subop_cast_u64_to_f64,
 
-    subop_cast_f32_to_i32 = 46,
-    subop_cast_f32_to_u32 = 47,
-    subop_cast_f32_to_i64 = 48,
-    subop_cast_f32_to_u64 = 49,
+    subop_cast_f32_to_i32,
+    subop_cast_f32_to_u32,
+    subop_cast_f32_to_i64,
+    subop_cast_f32_to_u64,
 
-    subop_cast_f64_to_i32 = 50,
-    subop_cast_f64_to_u32 = 51,
-    subop_cast_f64_to_i64 = 52,
-    subop_cast_f64_to_u64 = 53,
+    subop_cast_f64_to_i32,
+    subop_cast_f64_to_u32,
+    subop_cast_f64_to_i64,
+    subop_cast_f64_to_u64,
 
     // -------------------------------数据加载、存储子码-----------------------------
     subop_load_w32_i8 = 0,
-    subop_load_w32_u8 = 1,
-    subop_load_w32_i16 = 2,
-    subop_load_w32_u16 = 3,
-    subop_load_w32_i32 = 4,
-    subop_load_w32_u32 = 5,
-    subop_load_w32_f32 = 6,
+    subop_load_w32_u8,
+    subop_load_w32_i16,
+    subop_load_w32_u16,
+    subop_load_w32_i32,
+    subop_load_w32_u32,
+    subop_load_w32_f32,
 
-    subop_load_w64_i8 = 7,
-    subop_load_w64_u8 = 8,
-    subop_load_w64_i16 = 9,
-    subop_load_w64_u16 = 10,
-    subop_load_w64_i32 = 11,
-    subop_load_w64_u32 = 12,
-    subop_load_w64_i64 = 13,
-    subop_load_w64_u64 = 14,
-    subop_load_w64_f64 = 15,
+    subop_load_w64_i8,
+    subop_load_w64_u8,
+    subop_load_w64_i16,
+    subop_load_w64_u16,
+    subop_load_w64_i32,
+    subop_load_w64_u32,
+    subop_load_w64_i64,
+    subop_load_w64_u64,
+    subop_load_w64_f64,
 
-    subop_load_ptr = 16,
+    subop_load_ptr,
 
-    subop_store_w32_i8 = 17,
-    subop_store_w32_u8 = 18,
-    subop_store_w32_i16 = 19,
-    subop_store_w32_u16 = 20,
-    subop_store_w32_i32 = 21,
-    subop_store_w32_u32 = 22,
-    subop_store_w32_f32 = 23,
+    subop_store_w32_i8,
+    subop_store_w32_u8,
+    subop_store_w32_i16,
+    subop_store_w32_u16,
+    subop_store_w32_i32,
+    subop_store_w32_u32,
+    subop_store_w32_f32,
 
-    subop_store_w64_i8 = 24,
-    subop_store_w64_u8 = 25,
-    subop_store_w64_i16 = 26,
-    subop_store_w64_u16 = 27,
-    subop_store_w64_i32 = 28,
-    subop_store_w64_u32 = 29,
-    subop_store_w64_i64 = 30,
-    subop_store_w64_u64 = 31,
-    subop_store_w64_f64 = 32,
+    subop_store_w64_i8,
+    subop_store_w64_u8,
+    subop_store_w64_i16,
+    subop_store_w64_u16,
+    subop_store_w64_i32,
+    subop_store_w64_u32,
+    subop_store_w64_i64,
+    subop_store_w64_u64,
+    subop_store_w64_f64,
 
-    subop_store_ptr = 33,
+    subop_store_ptr,
 
     // 偏移量为立即数
     // op_ldst_r4_subop  ： 8-8-4-4-uimm8
     // op_ldst_r8_subop  ： 8-8-8-8-uimm16
     // op_ldst_r16_subop ： 8-8-16-16-uimm16
 
-    subop_load_imm_w32_i8 = 34,
-    subop_load_imm_w32_u8 = 35,
-    subop_load_imm_w32_i16 = 36,
-    subop_load_imm_w32_u16 = 37,
-    subop_load_imm_w32_i32 = 38,
-    subop_load_imm_w32_u32 = 39,
-    subop_load_imm_w32_f32 = 40,
+    subop_load_imm_w32_i8,
+    subop_load_imm_w32_u8,
+    subop_load_imm_w32_i16,
+    subop_load_imm_w32_u16,
+    subop_load_imm_w32_i32,
+    subop_load_imm_w32_u32,
+    subop_load_imm_w32_f32,
 
-    subop_load_imm_w64_i8 = 41,
-    subop_load_imm_w64_u8 = 42,
-    subop_load_imm_w64_i16 = 43,
-    subop_load_imm_w64_u16 = 44,
-    subop_load_imm_w64_i32 = 45,
-    subop_load_imm_w64_u32 = 46,
-    subop_load_imm_w64_i64 = 47,
-    subop_load_imm_w64_u64 = 48,
-    subop_load_imm_w64_f64 = 49,
+    subop_load_imm_w64_i8,
+    subop_load_imm_w64_u8,
+    subop_load_imm_w64_i16,
+    subop_load_imm_w64_u16,
+    subop_load_imm_w64_i32,
+    subop_load_imm_w64_u32,
+    subop_load_imm_w64_i64,
+    subop_load_imm_w64_u64,
+    subop_load_imm_w64_f64,
 
-    subop_load_imm_ptr = 50,
+    subop_load_imm_ptr,
 
-    subop_store_imm_w32_i8 = 51,
-    subop_store_imm_w32_u8 = 52,
-    subop_store_imm_w32_i16 = 53,
-    subop_store_imm_w32_u16 = 54,
-    subop_store_imm_w32_i32 = 55,
-    subop_store_imm_w32_u32 = 56,
-    subop_store_imm_w32_f32 = 57,
+    subop_store_imm_w32_i8,
+    subop_store_imm_w32_u8,
+    subop_store_imm_w32_i16,
+    subop_store_imm_w32_u16,
+    subop_store_imm_w32_i32,
+    subop_store_imm_w32_u32,
+    subop_store_imm_w32_f32,
 
-    subop_store_imm_w64_i8 = 58,
-    subop_store_imm_w64_u8 = 59,
-    subop_store_imm_w64_i16 = 60,
-    subop_store_imm_w64_u16 = 61,
-    subop_store_imm_w64_i32 = 62,
-    subop_store_imm_w64_u32 = 63,
-    subop_store_imm_w64_i64 = 64,
-    subop_store_imm_w64_u64 = 65,
-    subop_store_imm_w64_f64 = 66,
+    subop_store_imm_w64_i8,
+    subop_store_imm_w64_u8,
+    subop_store_imm_w64_i16,
+    subop_store_imm_w64_u16,
+    subop_store_imm_w64_i32,
+    subop_store_imm_w64_u32,
+    subop_store_imm_w64_i64,
+    subop_store_imm_w64_u64,
+    subop_store_imm_w64_f64,
 
-    subop_store_imm_ptr = 67,
+    subop_store_imm_ptr,
 
     // -------------------------------数学二地址运算子码-----------------------------
 
@@ -389,6 +389,41 @@ enum SubOPEnum
     subop_math3_min_f64,
 
     // ------------------分支跳转指令子码-----------------
+    // 和 0 比较分支
+    subop_jbr_ltz_i32 = 0,
+    subop_jbr_lez_i32,
+    subop_jbr_eqz_i32,
+    subop_jbr_nez_i32,
+    subop_jbr_gtz_i32,
+    subop_jbr_gez_i32,
+
+    subop_jbr_eqz_u32,
+    subop_jbr_nez_u32,
+
+    subop_jbr_ltz_i64,
+    subop_jbr_lez_i64,
+    subop_jbr_eqz_i64,
+    subop_jbr_nez_i64,
+    subop_jbr_gtz_i64,
+    subop_jbr_gez_i64,
+
+    subop_jbr_eqz_u64,
+    subop_jbr_nez_u64,
+
+    subop_jbr_ltz_f32,
+    subop_jbr_lez_f32,
+    subop_jbr_eqz_f32,
+    subop_jbr_nez_f32,
+    subop_jbr_gtz_f32,
+    subop_jbr_gez_f32,
+
+    subop_jbr_ltz_f64,
+    subop_jbr_lez_f64,
+    subop_jbr_eqz_f64,
+    subop_jbr_nez_f64,
+    subop_jbr_gtz_f64,
+    subop_jbr_gez_f64,
+    // src 与 src2 比较
     subop_jbr_lt_i32 = 0,
     subop_jbr_le_i32,
     subop_jbr_eq_i32,
@@ -430,49 +465,6 @@ enum SubOPEnum
     subop_jbr_ne_f64,
     subop_jbr_gt_f64,
     subop_jbr_ge_f64,
-
-    // 和 0 比较分支
-    subop_jbr_ltz_i32,
-    subop_jbr_lez_i32,
-    subop_jbr_eqz_i32,
-    subop_jbr_nez_i32,
-    subop_jbr_gtz_i32,
-    subop_jbr_gez_i32,
-
-    subop_jbr_ltz_u32,
-    subop_jbr_lez_u32,
-    subop_jbr_eqz_u32,
-    subop_jbr_nez_u32,
-    subop_jbr_gtz_u32,
-    subop_jbr_gez_u32,
-
-    subop_jbr_ltz_i64,
-    subop_jbr_lez_i64,
-    subop_jbr_eqz_i64,
-    subop_jbr_nez_i64,
-    subop_jbr_gtz_i64,
-    subop_jbr_gez_i64,
-
-    subop_jbr_ltz_u64,
-    subop_jbr_lez_u64,
-    subop_jbr_eqz_u64,
-    subop_jbr_nez_u64,
-    subop_jbr_gtz_u64,
-    subop_jbr_gez_u64,
-
-    subop_jbr_ltz_f32,
-    subop_jbr_lez_f32,
-    subop_jbr_eqz_f32,
-    subop_jbr_nez_f32,
-    subop_jbr_gtz_f32,
-    subop_jbr_gez_f32,
-
-    subop_jbr_ltz_f64,
-    subop_jbr_lez_f64,
-    subop_jbr_eqz_f64,
-    subop_jbr_nez_f64,
-    subop_jbr_gtz_f64,
-    subop_jbr_gez_f64,
 
     //------------------返回指令子码-----------------
     subop_return_void = 0, // 无返回值

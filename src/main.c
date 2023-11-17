@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <airvm_runtime.h>
-uint8_t gdata[2048];
+uint8_t gdata[10*1024];
 int main()
 {
    // system("chcp 65001");

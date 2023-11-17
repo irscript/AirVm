@@ -58,6 +58,8 @@
         "pthread.h": "c",
         "airvm_const_w64_r4.inl": "c",
         "airvm_const_r8_subop.inl": "c",
-        "airvm_const_r8.inl": "c"
+        "airvm_const_r8.inl": "c",
+        "airvm_goto.inl": "c",
+        "airvm_jbrz_r4_imm12.inl": "c"
     }
 }
