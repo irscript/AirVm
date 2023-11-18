@@ -225,6 +225,13 @@ struct Emiter
         code.emiter2(imm);
         code.emiter2(imm >> 16);
     }
+    inline void jbr_r4_imm8(uint8_t subop, uint8_t src, uint8_t src2, uint8_t imm)
+    {
+        uint16_t ins = (op_jbr_r4_imm8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (imm << 8) | ((src2 & 0xF) << 4) | (src & 0xF);
+        code.emiter2(ins);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__

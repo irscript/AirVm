@@ -1042,8 +1042,7 @@ int main(int argc, const char *argv[])
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
     emiter.jbrz_r16_imm16(subop_jbr_gez_f64, 4, 4);
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
-*/
-   
+
     emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15);                // 0
     emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32); // 1
     emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15);                // 2~3
@@ -1118,10 +1117,16 @@ int main(int argc, const char *argv[])
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
     emiter.jbrz_r16_imm32(subop_jbr_gez_f64, 4, 5);
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+*/
+
+    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15);                // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32); // 1
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15);                // 2~3
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64); // 4~5
 
     // 更新值
     auto data = emiter.code.buffer.data();
-    *(uint16_t *)data = 24;
+    *(uint16_t *)data = 36;
     *(uint16_t *)&data[2] = 0;
     *(uint32_t *)&data[4] = ((uint32_t)emiter.code.buffer.size() - 8) / 2;
 
