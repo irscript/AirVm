@@ -5,10 +5,19 @@
 #include <stdio.h>
 #include <math.h>
 
+// 函数栈帧
+typedef struct airvm_funcstack *airvm_funcstack_t;
+struct airvm_funcstack
+{
+    airvm_funcstack_t prev; // 上一个栈帧
+    airvm_func_t func;      // 当前帧函数
+    uint32_t PC;            // 程序计数器
+    uint32_t reg_set[];     // 当前帧寄存器集
+};
 // 虚拟机执行器上下文
 struct airvm_actuator
 {
-    airvm_actor_t prev; // 上一个栈帧
+    airvm_funcstack_t stack; // 当前函数栈帧
     // 当前函数返回值
     union
     {
@@ -23,9 +32,6 @@ struct airvm_actuator
         flt64_t f64;
     };
     uintptr_t exception; // 异常对象句柄
-    airvm_func_t func;   // 当前帧函数
-    uint32_t PC;         // 程序计数器
-    uint32_t reg_set[];  // 当前帧寄存器集
 };
 
 // 虚拟机执行的函数
@@ -42,39 +48,49 @@ void airvm_init(const airvm_config *config)
 }
 
 // 构建函数栈
-static inline airvm_actor_t airvm_build_stack(airvm_actor_t actor, airvm_func_t func)
+static inline void airvm_build_stack(airvm_actor_t actor, airvm_func_t func)
 {
     // func 不能为 null
     assert(func != 0);
     // 计算栈帧大小
-    uint32_t sfsize = sizeof(struct airvm_actuator) + sizeof(uint32_t) * func->reg_count;
+    uint32_t sfsize = sizeof(struct airvm_funcstack) + sizeof(uint32_t) * func->reg_count;
     // 分配内存
-    airvm_actor_t cactor = (airvm_actor_t)malloc(sfsize);
-    memset(cactor, 0, sfsize);
+    airvm_funcstack_t stack = (airvm_funcstack_t)malloc(sfsize);
+    memset(stack, 0, sfsize);
     // 初始化
-    cactor->func = func;
-    cactor->prev = actor;
-    return cactor;
+    stack->func = func;
+    stack->prev = actor->stack;
+    // 更新当前的栈帧
+    actor->stack = stack;
 }
 
 #define insresult(...) printf(__VA_ARGS__)
 
 airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_time)
 {
+    // 分配新的工作上下文句柄
+    if (actor == 0)
+    {
+        actor = (airvm_actor_t)malloc(sizeof(struct airvm_actuator));
+        memset(actor, 0, sizeof(struct airvm_actuator));
+    }
+
     // 第一次进入函数，需要重新分配栈
     if (0 != first_time)
     {
-        actor = airvm_build_stack(actor, func);
+        airvm_build_stack(actor, func);
     }
+    airvm_funcstack_t statck = actor->stack;
 
     assert(actor != 0 && func != 0);
 
     uint16_t ins = 0;
-    uint32_t *reg = actor->reg_set;
+    uint32_t *reg = statck->reg_set;
+    uint32_t *pc = &statck->PC;
     uint32_t reg_cout = func->reg_count;
     uint16_t *insarr = func->ins_set;
     uint32_t ins_cout = func->ins_count;
-    uint32_t *pc = &actor->PC;
+
     // 开始解析执行指令
     while (*pc < ins_cout)
     {
@@ -212,10 +228,16 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
 
     if (*pc == ins_cout)
     {
-        airvm_actor_t tmp = actor->prev;
-        free(actor);
-        actor = tmp;
+        airvm_funcstack_t tmp = statck->prev;
+        free(statck);
+        actor->stack = tmp;
     }
+    if (actor->stack == 0)
+    {
+        free(actor);
+        actor = 0;
+    }
+
     return actor;
     // 错误处理
 _Error_Handle:
@@ -223,7 +245,7 @@ _Error_Handle:
     printf("%4d: Instruction format error or unknown instruction!\n", *pc);
     exit(-1);
 }
-    return 0;
+    return actor;
 }
 
 #undef insresult
