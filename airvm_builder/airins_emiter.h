@@ -232,6 +232,38 @@ struct Emiter
         ins = (imm << 8) | ((src2 & 0xF) << 4) | (src & 0xF);
         code.emiter2(ins);
     }
+    inline void jbr_r8_imm16(uint8_t subop, uint8_t src, uint8_t src2, uint16_t imm)
+    {
+        uint16_t ins = (op_jbr_r8_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (src2 << 8) | src;
+        code.emiter2(ins);
+        code.emiter2(imm);
+    }
+    inline void jbr_r8_imm32(uint8_t subop, uint8_t src, uint8_t src2, uint32_t imm)
+    {
+        uint16_t ins = (op_jbr_r8_imm32_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (src2 << 8) | src;
+        code.emiter2(ins);
+        code.emiter4(imm);
+    }
+    inline void jbr_r16_imm16(uint8_t subop, uint16_t src, uint16_t src2, uint16_t imm)
+    {
+        uint16_t ins = (op_jbr_r16_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(src);
+        code.emiter2(src2);
+        code.emiter2(imm);
+    }
+    inline void jbr_r16_imm32(uint8_t subop, uint16_t src, uint16_t src2, uint32_t imm)
+    {
+        uint16_t ins = (op_jbr_r16_imm32_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(src);
+        code.emiter2(src2);
+        code.emiter4(imm);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__

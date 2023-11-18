@@ -12,7 +12,9 @@ int main(int argc, const char *argv[])
     emiter.nop();
 
     float f32 = 3.14159;
+    float negf32 = -3.14159;
     double f64 = 9.45679235;
+    double negf64 = -9.45679235;
 
     // 开始填充指令
     /*
@@ -1117,13 +1119,416 @@ int main(int argc, const char *argv[])
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
     emiter.jbrz_r16_imm32(subop_jbr_gez_f64, 4, 5);
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
-*/
 
-    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15);                // 0
-    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&f32); // 1
-    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15);                // 2~3
-    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&f64); // 4~5
+    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15); // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_i32, 1, -1); // 1
 
+    emiter.jbr_r8_imm16(subop_jbr_lt_i32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_le_i32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_eq_i32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ne_i32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_gt_i32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ge_i32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_lt_u32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_le_u32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_eq_u32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ne_u32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_gt_u32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ge_u32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15); // 2~3
+    emiter.const_r16_imm64(subop_const_w64_r16_i64, 4, -1); // 4~5
+
+    emiter.jbr_r8_imm16(subop_jbr_lt_i64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_le_i64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_eq_i64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ne_i64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_gt_i64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ge_i64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_lt_u64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_le_u64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_eq_u64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ne_u64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_gt_u64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ge_u64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 0, *(uint32_t *)&f32);    // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&negf32); // 1
+
+    emiter.jbr_r8_imm16(subop_jbr_lt_f32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_le_f32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_eq_f32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ne_f32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_gt_f32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ge_f32, 0, 1, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 2, *(uint64_t *)&f64);    // 0
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&negf64); // 1
+
+    emiter.jbr_r8_imm16(subop_jbr_lt_f64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_le_f64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_eq_f64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ne_f64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm16(subop_jbr_gt_f64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm16(subop_jbr_ge_f64, 2, 4, 4);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15); // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_i32, 1, -1); // 1
+
+    emiter.jbr_r8_imm32(subop_jbr_lt_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_le_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_eq_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ne_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_gt_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ge_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_lt_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_le_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_eq_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ne_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_gt_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ge_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15); // 2~3
+    emiter.const_r16_imm64(subop_const_w64_r16_i64, 4, -1); // 4~5
+
+    emiter.jbr_r8_imm32(subop_jbr_lt_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_le_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_eq_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ne_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_gt_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ge_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_lt_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_le_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_eq_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ne_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_gt_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ge_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 0, *(uint32_t *)&f32);    // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&negf32); // 1
+
+    emiter.jbr_r8_imm32(subop_jbr_lt_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_le_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_eq_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ne_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_gt_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ge_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 2, *(uint64_t *)&f64);    // 0
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&negf64); // 1
+
+    emiter.jbr_r8_imm32(subop_jbr_lt_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_le_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_eq_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ne_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r8_imm32(subop_jbr_gt_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r8_imm32(subop_jbr_ge_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+
+    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15); // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_i32, 1, -1); // 1
+
+    emiter.jbr_r16_imm32(subop_jbr_lt_i32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_le_i32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_eq_i32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ne_i32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_gt_i32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ge_i32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_lt_u32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_le_u32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_eq_u32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ne_u32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_gt_u32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ge_u32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15); // 2~3
+    emiter.const_r16_imm64(subop_const_w64_r16_i64, 4, -1); // 4~5
+
+    emiter.jbr_r16_imm32(subop_jbr_lt_i64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_le_i64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_eq_i64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ne_i64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_gt_i64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ge_i64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_lt_u64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_le_u64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_eq_u64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ne_u64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_gt_u64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ge_u64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 0, *(uint32_t *)&f32);    // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&negf32); // 1
+
+    emiter.jbr_r16_imm32(subop_jbr_lt_f32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_le_f32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_eq_f32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ne_f32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_gt_f32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ge_f32, 0, 1, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 2, *(uint64_t *)&f64);    // 0
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&negf64); // 1
+
+    emiter.jbr_r16_imm32(subop_jbr_lt_f64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_le_f64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_eq_f64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ne_f64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm32(subop_jbr_gt_f64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm32(subop_jbr_ge_f64, 2, 4, 6);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    */
+
+    emiter.const_r16_imm32(subop_const_w32_r16_u32, 0, 15); // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_i32, 1, -1); // 1
+
+    emiter.jbr_r16_imm16(subop_jbr_lt_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_le_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_eq_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ne_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_gt_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ge_i32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_lt_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_le_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_eq_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ne_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_gt_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ge_u32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_u64, 2, 15); // 2~3
+    emiter.const_r16_imm64(subop_const_w64_r16_i64, 4, -1); // 4~5
+
+    emiter.jbr_r16_imm16(subop_jbr_lt_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_le_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_eq_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ne_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_gt_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ge_i64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_lt_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_le_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_eq_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ne_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_gt_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ge_u64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 0, *(uint32_t *)&f32);    // 0
+    emiter.const_r16_imm32(subop_const_w32_r16_f32, 1, *(uint32_t *)&negf32); // 1
+
+    emiter.jbr_r16_imm16(subop_jbr_lt_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_le_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_eq_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ne_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_gt_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ge_f32, 0, 1, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 2, *(uint64_t *)&f64);    // 0
+    emiter.const_r16_imm64(subop_const_w64_r16_f64, 4, *(uint64_t *)&negf64); // 1
+
+    emiter.jbr_r16_imm16(subop_jbr_lt_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_le_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_eq_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ne_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.jbr_r16_imm16(subop_jbr_gt_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+    emiter.jbr_r16_imm16(subop_jbr_ge_f64, 2, 4, 5);
+    emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
     // 更新值
     auto data = emiter.code.buffer.data();
     *(uint16_t *)data = 36;

@@ -145,67 +145,28 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
 #include "inline/airvm_jbrz_r8_imm24.inl"
 #include "inline/airvm_jbrz_r16_imm16.inl"
 #include "inline/airvm_jbrz_r16_imm32.inl"
-            // 分支跳转指令：jbr subop,src,src2,imm
-        case op_jbr_r4_imm8_subop: // 8-8-4-4-8
+        // 分支跳转指令：jbr subop,src,src2,imm
+#include "inline/airvm_jbr_r4_imm8.inl"
+#include "inline/airvm_jbr_r8_imm16.inl"
+#include "inline/airvm_jbr_r8_imm32.inl"
+#include "inline/airvm_jbr_r16_imm16.inl"
+#include "inline/airvm_jbr_r16_imm32.inl"
+
+        // 返回指令
+        case op_return_subop: // 8-8-16-16-16
         {
             uint32_t subop = ins & 0x00FF;
-            uint32_t ins2 = insarr[*pc + 1];
-            uint32_t src = (ins2 & 0xF);
-            uint32_t src2 = (ins2 & 0xF0) >> 4;
+            uint32_t src = insarr[*pc + 1];
+            uint32_t src2 = insarr[*pc + 2];
 
-            int32_t offset = (int8_t)(ins2 >> 8);
+            int32_t offset = (int16_t)insarr[*pc + 3];
             switch (subop)
             {
             case subop_jbr_lt_i32:
             {
-                int32_t shift = (int32_t)reg[src] < (int32_t)reg[src2] ? offset : 2;
+                int32_t shift = (int32_t)reg[src] < (int32_t)reg[src2] ? offset : 4;
                 *pc += shift;
-                insresult("%4X: jbr_r4_imm8_lt_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
-                          *pc - shift, src, src2, offset, shift, *pc);
-                continue;
-            }
-            break;
-            case subop_jbr_le_i32:
-            {
-                int32_t shift = (int32_t)reg[src] <= (int32_t)reg[src2] ? offset : 2;
-                *pc += shift;
-                insresult("%4X: jbr_r4_imm8_le_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
-                          *pc - shift, src, src2, offset, shift, *pc);
-                continue;
-            }
-            break;
-            case subop_jbr_eq_i32:
-            {
-                int32_t shift = (int32_t)reg[src] == (int32_t)reg[src2] ? offset : 2;
-                *pc += shift;
-                insresult("%4X: jbr_r4_imm8_eq_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
-                          *pc - shift, src, src2, offset, shift, *pc);
-                continue;
-            }
-            break;
-            case subop_jbr_ne_i32:
-            {
-                int32_t shift = (int32_t)reg[src] != (int32_t)reg[src2] ? offset : 2;
-                *pc += shift;
-                insresult("%4X: jbr_r4_imm8_ne_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
-                          *pc - shift, src, src2, offset, shift, *pc);
-                continue;
-            }
-            break;
-            case subop_jbr_gt_i32:
-            {
-                int32_t shift = (int32_t)reg[src] > (int32_t)reg[src2] ? offset : 2;
-                *pc += shift;
-                insresult("%4X: jbr_r4_imm8_gt_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
-                          *pc - shift, src, src2, offset, shift, *pc);
-                continue;
-            }
-            break;
-            case subop_jbr_ge_i32:
-            {
-                int32_t shift = (int32_t)reg[src] >= (int32_t)reg[src2] ? offset : 2;
-                *pc += shift;
-                insresult("%4X: jbr_r4_imm8_ge_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
+                insresult("%4X: jbr_r16_imm16_lt_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
                           *pc - shift, src, src2, offset, shift, *pc);
                 continue;
             }
@@ -242,7 +203,7 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
     // 错误处理
 _Error_Handle:
 {
-    printf("%4d: Instruction format error or unknown instruction!\n", *pc);
+    printf("%4x: Instruction format error or unknown instruction!\n", *pc);
     exit(-1);
 }
     return actor;
