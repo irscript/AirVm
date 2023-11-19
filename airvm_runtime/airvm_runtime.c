@@ -47,6 +47,19 @@ void airvm_init(const airvm_config *config)
 {
 }
 
+airvm_actor_t airvm_alloc_actor()
+{
+    airvm_actor_t actor = (airvm_actor_t)malloc(sizeof(struct airvm_actuator));
+    memset(actor, 0, sizeof(struct airvm_actuator));
+    return actor;
+}
+
+void airvm_free_actor(airvm_actor_t *actor)
+{
+    free(*actor);
+    *actor = NULL;
+}
+
 // 构建函数栈
 static inline void airvm_build_stack(airvm_actor_t actor, airvm_func_t func)
 {
@@ -64,23 +77,19 @@ static inline void airvm_build_stack(airvm_actor_t actor, airvm_func_t func)
     actor->stack = stack;
 }
 
+void airvm_set_func(airvm_actor_t actor, airvm_func_t func)
+{
+    airvm_build_stack(actor, func);
+}
+
 #define insresult(...) printf(__VA_ARGS__)
 
-airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_time)
+void airvm_run(airvm_actor_t actor)
 {
-    // 分配新的工作上下文句柄
-    if (actor == 0)
-    {
-        actor = (airvm_actor_t)malloc(sizeof(struct airvm_actuator));
-        memset(actor, 0, sizeof(struct airvm_actuator));
-    }
-
-    // 第一次进入函数，需要重新分配栈
-    if (0 != first_time)
-    {
-        airvm_build_stack(actor, func);
-    }
     airvm_funcstack_t statck = actor->stack;
+    if (statck == NULL)
+        return;
+    airvm_func_t func = statck->func;
 
     assert(actor != 0 && func != 0);
 
@@ -153,7 +162,7 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
 #include "inline/airvm_jbr_r16_imm32.inl"
 
         // 返回指令
-        case op_return_subop: // 8-8-16-16-16
+        case op_return_subop: // 8-8
         {
             uint32_t subop = ins & 0x00FF;
             uint32_t src = insarr[*pc + 1];
@@ -162,12 +171,47 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
             int32_t offset = (int16_t)insarr[*pc + 3];
             switch (subop)
             {
-            case subop_jbr_lt_i32:
+            case subop_return_void: // 8-8
             {
-                int32_t shift = (int32_t)reg[src] < (int32_t)reg[src2] ? offset : 4;
-                *pc += shift;
-                insresult("%4X: jbr_r16_imm16_lt_i32  \tr%d, \tr%d, \t%d \tshift:%d \tresult: %x\n",
-                          *pc - shift, src, src2, offset, shift, *pc);
+                insresult("%4X: return-void \n", *pc);
+                // 更新栈数据
+                actor->stack = statck->prev;
+                free(statck);
+                statck = actor->stack;
+
+                // 当前栈为空，程序运行完毕
+                if (statck == NULL)
+                    return;
+
+                // 获取函数的相关参数
+                reg = statck->reg_set;
+                pc = &statck->PC;
+                func = statck->func;
+                reg_cout = func->reg_count;
+                insarr = func->ins_set;
+                ins_cout = func->ins_count;
+                continue;
+            }
+            break;
+            case subop_return_i16: // 8-8
+            {
+                insresult("%4X: return-void \n", *pc);
+                // 更新栈数据
+                actor->stack = statck->prev;
+                free(statck);
+                statck = actor->stack;
+
+                // 当前栈为空，程序运行完毕
+                if (statck == NULL)
+                    return;
+
+                // 获取函数的相关参数
+                reg = statck->reg_set;
+                pc = &statck->PC;
+                func = statck->func;
+                reg_cout = func->reg_count;
+                insarr = func->ins_set;
+                ins_cout = func->ins_count;
                 continue;
             }
             break;
@@ -187,26 +231,21 @@ airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_t
         }
     }
 
+    // 当函数最后没有return指令时，释放当前函数栈
     if (*pc == ins_cout)
     {
-        airvm_funcstack_t tmp = statck->prev;
+        actor->stack = statck->prev;
         free(statck);
-        actor->stack = tmp;
-    }
-    if (actor->stack == 0)
-    {
-        free(actor);
-        actor = 0;
     }
 
-    return actor;
-    // 错误处理
+    return;
+
+    // ---------------------错误处理--------------------------
 _Error_Handle:
 {
     printf("%4x: Instruction format error or unknown instruction!\n", *pc);
     exit(-1);
 }
-    return actor;
 }
 
 #undef insresult

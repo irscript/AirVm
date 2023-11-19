@@ -264,6 +264,11 @@ struct Emiter
         code.emiter2(src2);
         code.emiter4(imm);
     }
+    inline void return_void()
+    {
+        uint16_t ins = (op_return_subop << 8) | subop_return_void;
+        code.emiter2(ins);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__

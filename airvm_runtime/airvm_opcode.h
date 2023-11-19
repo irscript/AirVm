@@ -64,9 +64,9 @@ enum OPEnum
     op_goto_i8,  // 有符号 8 位 相对本指令偏移 8-8
     op_goto_i24, // 有符号 24 位 相对本指令偏移8-24
     op_goto_i32, // 有符号 32 位 相对本指令偏移8-8-32
-    
+
     // 跳表跳转 goto ir imm
-    //op_goto_tab, 
+    // op_goto_tab,
 
     // 分支跳转指令：jbrz subop,src,imm
     op_jbrz_r4_imm12_subop,  // jbr subop,src,imm12 : 8-8-4-12
@@ -88,22 +88,23 @@ enum OPEnum
     op_return_subop, // return subop,reg/imm  : 8-8-*
     /*子码定义*/
 
-    // 数据加载、存储: op subop,des,src,offset
-    // offset代表的寄存器是uint32_t 的值
-    op_ldst_r4_subop,  // 8-8-4-4-4-[4], imm8
-    op_ldst_r8_subop,  // 8-8-8-8-8-[8], imm16
-    op_ldst_r16_subop, // 8-8-16-16-16,imm16
-
     // 返回值获取
     op_getret_r16_subop, // getret subop,reg : 8-8-16
-                         /*子码定义*/
+    /*子码定义*/
 
-    // 函数调用指令 : call funcptr[argcnt](arg,arg1,arg2,arg3)
-    op_call_native_func,    // 主机函数调用
-    op_call_static_func,    // 静态函数调用
-    op_call_member_func,    // 成员函数调用
-    op_call_virtual_func,   // 虚函数调用
-    op_call_interface_func, // 接口函数调用
+    // 函数相关指令
+    op_func_subop, // func subop,funcptr[argcnt](arg,arg1,arg2,...)
+    /*子码定义*/
+
+    // 内存分配
+    op_memory_subop,
+
+    // 数据加载、存储: op subop,des,src,offset
+    // offset代表的寄存器是uint32_t 的值
+    op_ldst_r4_subop,  // 8-8-4-4-8, imm8
+    op_ldst_r8_subop,  // 8-8-8-8-16, imm16
+    op_ldst_r16_subop, // 8-8-16-16-16,imm16
+
 };
 
 // 子码定义

@@ -14,7 +14,15 @@ typedef struct
 
 // 初始化
 void airvm_init(const airvm_config *config);
+
+// 获取一个执行器上下文
+airvm_actor_t airvm_alloc_actor();
+// 释放执行器上下文
+void airvm_free_actor(airvm_actor_t* actor);
+// 设置运行函数函数栈
+void airvm_set_func(airvm_actor_t actor, airvm_func_t func);
+
 // 运行函数
-airvm_actor_t airvm_run(airvm_actor_t actor, airvm_func_t func, uint32_t first_time);
+void airvm_run(airvm_actor_t actor);
 
 #endif // __AIRVM_RUNTIME_INC__

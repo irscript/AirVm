@@ -1529,6 +1529,8 @@ int main(int argc, const char *argv[])
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
     emiter.jbr_r16_imm16(subop_jbr_ge_f64, 2, 4, 5);
     emiter.const_r4_imm4(op_const_w32_r4_i4, 14, 0);
+
+    emiter.return_void();
     // 更新值
     auto data = emiter.code.buffer.data();
     *(uint16_t *)data = 36;
