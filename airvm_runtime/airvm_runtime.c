@@ -209,19 +209,25 @@ void airvm_run(airvm_actor_t actor)
         case op_func_subop: // 8-8-16
         {
             uint32_t subop = ins & 0x00FF;
-            uint32_t des = insarr[*pc + 1];
 
             switch (subop)
             {
-            case subop_getret_w32_r16_i8: // 8-8-16
+                // 主机函数调用
+                // func subop,dllserial,funcserial,argcnt,arg,arg1,...,argn
+            case subop_call_r4_native_func: // 8-8-16-32-8,4-4-4-...-4
             {
-                reg[des] = actor->i8;
-                insresult("%4X: getret_w32_r16_i8 \tr%d resault:%d\n",
-                          *pc, des, actor->i8);
+                // dll动态库编号
+                uint32_t dllserial = insarr[*pc + 1];
+                // 主机函数编号
+                uint32_t funcserial = (insarr[*pc + 3] << 16) | insarr[*pc + 2];
+                // 获取参数数量
+                uint32_t argcnt = insarr[*pc + 3] & 0xFF;
+
+                insresult("%4X: call_r4_native_func \tr%d resault:%d\n", *pc);
                 *pc += 2;
                 continue;
-            }break;
-            
+            }
+            break;
 
             // subop 默认处理
             default:
