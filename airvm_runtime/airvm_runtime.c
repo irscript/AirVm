@@ -17,21 +17,29 @@ struct airvm_funcstack
 // 虚拟机执行器上下文
 struct airvm_actuator
 {
-    airvm_funcstack_t stack; // 当前函数栈帧
+    // 当前函数栈帧
+    airvm_funcstack_t stack;
     // 当前函数返回值
     union
     {
-        uintptr_t retval; // 当前函数返回值
-        void *ptr;
+        uintptr_t ptr; // 地址
+
+        // 返回的有符号整数
         int8_t i8;
         int16_t i16;
         int32_t i32;
         int64_t i64;
-
+        // 返回的无符号整数
+        uint8_t u8;
+        uint16_t u16;
+        uint32_t u32;
+        uint64_t u64;
+        // 返回的浮点数
         flt32_t f32;
         flt64_t f64;
     };
-    uintptr_t exception; // 异常对象句柄
+    // 异常对象句柄
+    uintptr_t exception;
 };
 
 // 虚拟机执行的函数
@@ -56,8 +64,20 @@ airvm_actor_t airvm_alloc_actor()
 
 void airvm_free_actor(airvm_actor_t *actor)
 {
-    free(*actor);
+    airvm_actor_t tmp = *actor;
+    if (tmp == NULL)
+        return;
     *actor = NULL;
+    // 释放还存在的函数栈
+    airvm_funcstack_t stack = tmp->stack;
+    while (stack != NULL)
+    {
+        airvm_funcstack_t tmp = stack->prev;
+        free(stack);
+        stack = tmp;
+    }
+    // 释放上下文句柄
+    free(tmp);
 }
 
 // 构建函数栈
@@ -82,7 +102,27 @@ void airvm_set_func(airvm_actor_t actor, airvm_func_t func)
     airvm_build_stack(actor, func);
 }
 
+#ifndef insresult
 #define insresult(...) printf(__VA_ARGS__)
+#endif
+
+// 处理返回指令的公共代码
+#define insreturn()                  \
+    do                               \
+    {                                \
+        actor->stack = statck->prev; \
+        free(statck);                \
+        statck = actor->stack;       \
+                                     \
+        if (statck == NULL)          \
+            return;                  \
+        reg = statck->reg_set;       \
+        pc = &statck->PC;            \
+        func = statck->func;         \
+        reg_cout = func->reg_count;  \
+        insarr = func->ins_set;      \
+        ins_cout = func->ins_count;  \
+    } while (0);
 
 void airvm_run(airvm_actor_t actor)
 {
@@ -160,61 +200,28 @@ void airvm_run(airvm_actor_t actor)
 #include "inline/airvm_jbr_r8_imm32.inl"
 #include "inline/airvm_jbr_r16_imm16.inl"
 #include "inline/airvm_jbr_r16_imm32.inl"
-
         // 返回指令
-        case op_return_subop: // 8-8
+#include "inline/airvm_return.inl"
+        // 返回值获取
+#include "inline/airvm_getret.inl"
+
+        // 函数相关指令
+        case op_func_subop: // 8-8-16
         {
             uint32_t subop = ins & 0x00FF;
-            uint32_t src = insarr[*pc + 1];
-            uint32_t src2 = insarr[*pc + 2];
+            uint32_t des = insarr[*pc + 1];
 
-            int32_t offset = (int16_t)insarr[*pc + 3];
             switch (subop)
             {
-            case subop_return_void: // 8-8
+            case subop_getret_w32_r16_i8: // 8-8-16
             {
-                insresult("%4X: return-void \n", *pc);
-                // 更新栈数据
-                actor->stack = statck->prev;
-                free(statck);
-                statck = actor->stack;
-
-                // 当前栈为空，程序运行完毕
-                if (statck == NULL)
-                    return;
-
-                // 获取函数的相关参数
-                reg = statck->reg_set;
-                pc = &statck->PC;
-                func = statck->func;
-                reg_cout = func->reg_count;
-                insarr = func->ins_set;
-                ins_cout = func->ins_count;
+                reg[des] = actor->i8;
+                insresult("%4X: getret_w32_r16_i8 \tr%d resault:%d\n",
+                          *pc, des, actor->i8);
+                *pc += 2;
                 continue;
-            }
-            break;
-            case subop_return_i16: // 8-8
-            {
-                insresult("%4X: return-void \n", *pc);
-                // 更新栈数据
-                actor->stack = statck->prev;
-                free(statck);
-                statck = actor->stack;
-
-                // 当前栈为空，程序运行完毕
-                if (statck == NULL)
-                    return;
-
-                // 获取函数的相关参数
-                reg = statck->reg_set;
-                pc = &statck->PC;
-                func = statck->func;
-                reg_cout = func->reg_count;
-                insarr = func->ins_set;
-                ins_cout = func->ins_count;
-                continue;
-            }
-            break;
+            }break;
+            
 
             // subop 默认处理
             default:
@@ -237,10 +244,16 @@ void airvm_run(airvm_actor_t actor)
         actor->stack = statck->prev;
         free(statck);
     }
+    // 程序计数器值错误
+    if (*pc > ins_cout)
+    {
+        printf("\n\nProgram counter value error! %u > %u\n\n", *pc, ins_cout);
+        exit(-1);
+    }
 
     return;
 
-    // ---------------------错误处理--------------------------
+    // ---------------------错误指令处理--------------------------
 _Error_Handle:
 {
     printf("%4x: Instruction format error or unknown instruction!\n", *pc);
@@ -249,3 +262,4 @@ _Error_Handle:
 }
 
 #undef insresult
+#undef insreturn

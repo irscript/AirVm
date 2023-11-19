@@ -89,7 +89,7 @@ enum OPEnum
     /*子码定义*/
 
     // 返回值获取
-    op_getret_r16_subop, // getret subop,reg : 8-8-16
+    op_getret_subop, // getret subop,reg : 8-8-16
     /*子码定义*/
 
     // 函数相关指令

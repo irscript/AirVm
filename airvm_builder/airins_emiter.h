@@ -269,6 +269,40 @@ struct Emiter
         uint16_t ins = (op_return_subop << 8) | subop_return_void;
         code.emiter2(ins);
     }
+
+    inline void return_imm16(uint8_t subop, uint16_t imm)
+    {
+        uint16_t ins = (op_return_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(imm);
+    }
+    inline void return_imm32(uint8_t subop, uint32_t imm)
+    {
+        uint16_t ins = (op_return_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter4(imm);
+    }
+    inline void return_imm64(uint8_t subop, uint64_t imm)
+    {
+        uint16_t ins = (op_return_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter8(imm);
+    }
+    inline void return_reg(uint8_t subop, uint16_t reg)
+    {
+        uint16_t ins = (op_return_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(reg);
+    }
+
+    inline void getret_reg(uint8_t subop, uint16_t reg)
+    {
+        uint16_t ins = (op_getret_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(reg);
+    }
+
+    inline void func(uint8_t subop) {}
 };
 
 #endif // __AIRINS_EMITER_INC__
