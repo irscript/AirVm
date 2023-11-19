@@ -9,16 +9,22 @@ typedef void (*airvm_native_func_t)();        // 插件提供的本地函数
 
 typedef struct
 {
-
+    const char *exefile; // 可执行文件格式
 } airvm_config;
 
-// 初始化
-void airvm_init(const airvm_config *config);
+// 虚拟机环境初始化
+uintptr_t airvm_init(const airvm_config *config);
+// 虚拟机环境终结化
+void airvm_terminal();
+// 加载文件
+uintptr_t airvm_load_file(const char *path);
+// 分析文件
+int32_t airvm_parse_file(uintptr_t handle);
 
 // 获取一个执行器上下文
 airvm_actor_t airvm_alloc_actor();
 // 释放执行器上下文
-void airvm_free_actor(airvm_actor_t* actor);
+void airvm_free_actor(airvm_actor_t *actor);
 // 设置运行函数函数栈
 void airvm_set_func(airvm_actor_t actor, airvm_func_t func);
 

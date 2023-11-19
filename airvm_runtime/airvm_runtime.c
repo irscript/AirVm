@@ -50,9 +50,23 @@ struct airvm_function
     uint32_t ins_count; // 函数的指令条数（以 uint16_t 为单位）
     uint16_t ins_set[]; // 指令数据
 };
-
-void airvm_init(const airvm_config *config)
+// 虚拟机环境初始化
+uintptr_t airvm_init(const airvm_config *config)
 {
+}
+// 虚拟机环境终结化
+void airvm_terminal()
+{
+}
+
+uintptr_t airvm_load_file(const char *path)
+{
+    return 0;
+}
+
+int32_t airvm_parse_file(uintptr_t handle)
+{
+    return 0;
 }
 
 airvm_actor_t airvm_alloc_actor()

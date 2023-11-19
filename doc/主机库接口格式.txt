@@ -1,0 +1,19 @@
+主机的动态库需要提供函数表
+
+函数接口声明
+void (*funcentry)(uint32_t argc,uint32_t argv[],uintptr_t ret);
+函数表
+struct{
+    struct{
+        const char* name;   //函数名称
+        funcentry   func;   //函数地址
+    }item[];    //项
+}functab;
+
+
+提供的声明结构
+struct{
+    uint32_t version;//版本
+    uint32_t funccount;//函数数量
+    functab* funcimp;//函数表
+}impdata;
