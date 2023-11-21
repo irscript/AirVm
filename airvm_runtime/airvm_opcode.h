@@ -29,6 +29,9 @@ enum OPEnum
     op_const_w32_r8_i32, // op des,imm  : imm32 => des
     op_const_w32_r8_u32, // op des,imm  : imm32 => des
     op_const_w32_r8_f32, // op des,imm  : imm32 => des
+
+    op_const_w64_r8_i32, // op des,imm  : imm32 => des
+    op_const_w64_r8_u32, // op des,imm  : imm32 => des
     op_const_w64_r8_i64, // op des,imm  : imm32 => des
     op_const_w64_r8_u64, // op des,imm  : imm32 => des
     op_const_w64_r8_f64, // op des,imm  : imm32 => des

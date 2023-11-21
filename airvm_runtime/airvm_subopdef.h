@@ -105,11 +105,15 @@ enum SubOPEnum
     subop_cast_f64_to_i64,
     subop_cast_f64_to_u64,
 
+
     // -------------------------------数学二地址运算子码-----------------------------
 
     // 一元算术运算
     subop_math2_not_w32 = 0, // 32 位 按位取反
     subop_math2_not_w64,     // 64 位 按位取反
+
+    subop_math2_inv_w32, // 32 位 逻辑取反
+    subop_math2_inv_w64, // 64 位 逻辑取反
 
     subop_math2_neg_i32, // 32 位 符号取反
     subop_math2_neg_i64, // 64 位 符号取反

@@ -90,6 +90,26 @@ case op_const_w32_r8_f32:
     continue;
 }
 break;
+case op_const_w64_r8_i32:
+{
+    uint32_t des = ins & 0x00FF;
+    int32_t imm = *(int32_t *)&insarr[*pc + 1];
+    *(int64_t *)&reg[des] = imm;
+    insresult("%4X: const_w64_r8_i32  \tr%d, \t%d\n", *pc, des, reg[des]);
+    *pc += 3;
+    continue;
+}
+break;
+case op_const_w64_r8_u32:
+{
+    uint32_t des = ins & 0x00FF;
+    uint32_t imm = *(uint32_t *)&insarr[*pc + 1];
+    *(uint64_t *)&reg[des] = imm;
+    insresult("%4X: const_w64_r8_u32  \tr%d, \t%u\n", *pc, des, reg[des]);
+    *pc += 3;
+    continue;
+}
+break;
 case op_const_w64_r8_i64:
 {
     uint32_t des = ins & 0x00FF;

@@ -1,0 +1,44 @@
+汇编程序配置信息
+地址位数： .bits 64      
+
+数据
+.int8   0
+.int16  16
+.int32  32
+.int64  64
+.flt32  3.32
+.flt64  3.64
+.str  "string"
+
+注释 //  /**/
+
+全局变量
+
+.var name type {
+    初始值
+}
+
+函数定义
+.func @name(
+    .arg name  type
+)
+.return type
+{
+    局部变量
+    .var name type
+}
+ 
+
+汇编指令
+
+常量赋值
+    const-w32-sint Rdes,imm     //有符号立即数赋值
+    const-w32-uint Rdes,imm     //无符号立即数赋值
+    const-w32-flt  Rdes,imm     //单精度浮点数赋值
+
+    const-w64-sint Rdes,imm     //有符号立即数赋值
+    const-w64-uint Rdes,imm     //无符号立即数赋值
+    const-w64-flt  Rdes,imm     //双精度浮点数赋值
+
+    const-w32-h16 Rdes,imm     //16 bit 立即数赋值
+    const-w32-l16 Rdes,imm     //16 bit 立即数赋值

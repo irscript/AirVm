@@ -26,6 +26,25 @@ case op_math2_r16_subop:
         continue;
     }
     break;
+    // 逻辑取反
+    case subop_math2_inv_w32:
+    {
+        reg[des] = !reg[src];
+        insresult("%4X: inv_r16_w32  \tr%d, \tr%d \tresult: 0x%X\n",
+                  *pc, des, src, reg[des]);
+        *pc += 2;
+        continue;
+    }
+    break;
+    case subop_math2_inv_w64:
+    {
+        *(uint64_t *)&reg[des] = !(*(uint64_t *)&reg[src]);
+        insresult("%4X: inv_r16_w64 \tr%d, \tr%d \tresult: 0x%llX\n",
+                  *pc, des, src, *(uint64_t *)&reg[des]);
+        *pc += 2;
+        continue;
+    }
+    break;
     // 符号取反
     case subop_math2_neg_i32:
     {

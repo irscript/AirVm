@@ -17,3 +17,7 @@ struct{
     uint32_t funccount;//函数数量
     functab* funcimp;//函数表
 }impdata;
+
+
+提供获取声明数据结构的函数
+airvm_plugin_t plugin_init(airvm_interface_t,uint32_t version)

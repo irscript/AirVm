@@ -1,0 +1,126 @@
+符号名称
+    命名符号 @a.b.c.func,@a.b.c:func
+    临时符号 %0，%a
+
+基本类型
+int8,int16,int32,int64
+uint8,uint16,uint32,uint64
+sint,uint,uintptr
+flt32,flt64
+bool,char,
+cstring string
+
+
+全局变量声明
+vardef<type> name
+
+函数声明
+fundef @name(type arg,type arg2)->return_Type {
+
+}
+
+
+基本块
+%entry(arg1,arg2,...):{
+
+}
+
+IR 运算指令
+    1、常量赋值
+        语法： const<type> imm =>desSym
+        类型： all
+
+    2、一元
+        1. 符号取反 
+            语法： neg<type> srcSym => desSym
+            类型：int32/64、sint、flt32、flt64 
+        2. 按位取反
+            语法： not<type> srcSym => desSym
+            类型：int8~64、uint8~64、sint、uint、
+        3. 逻辑取反
+            语法： inv<type> srcSym => desSym
+            类型：all
+    2、算术运算
+        1.加法
+            语法： add<type> srcSym, srcSym2 => desSym
+            类型：int32/64 uint32/64 flt32/64
+        2.减法
+            语法： sub<type> srcSym, srcSym2  => desSym
+            类型：int32/64 uint32/64 flt32/64
+        3.乘法
+            语法： mul<type> srcSym, srcSym2 => desSym
+            类型：int32/64 uint32/64 flt32/64
+        4.除加法
+            语法： div<type> srcSym, srcSym2 => desSym
+            类型：int32/64 uint32/64 flt32/64
+        5.求余
+            语法： mod<type> srcSym, srcSym2 => desSym
+            类型：int32/64 uint32/64 flt32/64
+
+    3、位运算
+        1.与
+            语法： and<type> srcSym, srcSym2 => desSym
+            类型：uint32/64
+        2.或
+            语法： or<type> srcSym, srcSym2  => desSym
+            类型：uint32/64 
+        3.异或
+            语法： xor<type> srcSym, srcSym2 => desSym
+            类型：uint32/64
+        4.左移
+            语法： shl<type> srcSym, srcSym2 => desSym
+            类型： uint32/64 
+        5.逻辑右移
+            语法： lshr<type> srcSym, srcSym2 => desSym
+            类型：uint32/64
+        6.算术右移
+            语法： ashr<type> srcSym, srcSym2 => desSym
+            类型：uint32/64
+        7.循环左移
+            语法： rol<type> srcSym, srcSym2 => desSym
+            类型： uint32/64 
+        8.循环右移
+            语法： ror<type> srcSym, srcSym2 => desSym
+            类型：uint32/64
+    4、逻辑运算
+        1.逻辑与
+            语法： land<type> srcSym, srcSym2 => desSym
+            类型： all
+        2.逻辑或
+            语法： lor<type> srcSym, srcSym2 => desSym
+            类型： all
+
+    5、赋值、转换指令
+        1、赋值
+            语法：mov<type> srcSym => desSym
+            类型： all
+        2、转换
+            语法：cast<type> srcSym => desSym
+            类型： all
+        3、截断
+            语法：trunc<type> srcSym => desSym
+            类型： all
+    
+    6、比较指令
+        指令：cmp_lt,cmp_le,cmp_eq,cmp_ne,cmp_gt,cmp_ge,
+        语法：ins<type> srcSym, srcSym2 => desSym
+        类型： int32/64、uint32/64 、flt32/64
+
+        指令：cmp_ltz,cmp_lez,cmp_eqz,cmp_nez,cmp_gtz,cmp_gez,
+        语法：ins<type> srcSym => desSym
+        类型： int32/64、uint32/64 、flt32/64
+
+    7、分支跳转指令
+        goto lable
+
+        指令：jbr_lt,jbr_le,jbr_eq,jbr_ne,jbr_gt,jbr_ge,
+        语法：ins<type> srcSym, srcSym2 => desSym
+        类型： int32/64、uint32/64 、flt32/64
+
+        指令：jbr_ltz,jbr_lez,jbr_eqz,jbr_nez,jbr_gtz,jbr_gez,
+        语法：ins<type> srcSym => desSym
+        类型： int32/64、uint32/64 、flt32/64
+
+
+
+    8、函数调用返回指令
