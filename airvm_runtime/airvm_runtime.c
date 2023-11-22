@@ -443,7 +443,6 @@ void airvm_run(airvm_actor_t actor)
                 // 计算并偏移量
                 uint32_t shift = 3 + align / 4;
                 insresult("%4X: call_r4_static_func\n", *pc);
-                *pc += shift;
                 // 获取函数地址
                 airvm_func_t call = airvm_get_func(func, funcserial);
                 assert(call != 0 && call->arg_count == argcnt);
@@ -458,8 +457,8 @@ void airvm_run(airvm_actor_t actor)
 
                     // 取第一个参数寄存器
                     uint32_t ari = (*arv) >> 4;
-                    argreg[0] = reg[ari];
-                    insresult("\tr%d: 0x%X\t%d\t%f\n", ari, argreg[0], argreg[0], argreg[0]);
+                    *argreg = reg[ari];
+                    insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, (flt32_t)*argreg);
                     ++arv;
                     ++argreg;
                     argcnt -= 1;
@@ -472,10 +471,13 @@ void airvm_run(airvm_actor_t actor)
                             ari = (*arv) >> 4;
                             ++arv;
                         }
-                        argreg[i] = reg[ari];
-                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, argreg[i], argreg[i], argreg[i]);
+                        *argreg = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, (flt32_t)*argreg);
+                        ++argreg;
                     }
                 }
+
+                *pc += shift;
                 insresult("\n\tresult: %X\n\n", *pc);
                 // 更新运行参数
                 inscallfunc();

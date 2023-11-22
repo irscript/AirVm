@@ -17,22 +17,26 @@ void build_exe()
         // 运行代码
         main.func_code.const_r4_imm4(op_const_w32_r4_i4, 0, -2);
         main.func_code.const_r4_imm4(op_const_w32_r4_u4, 1, 15);
+        main.func_code.const_r4_imm4(op_const_w32_r4_u4, 2, 15);
         std::vector<uint8_t> arg;
-        arg.push_back(2);
+        arg.push_back(3);
         arg.push_back(0);
         arg.push_back(1);
+        arg.push_back(2);
         main.func_code.call_r4_static_func(1, arg);
+        main.func_code.getret_reg(subop_getret_w32_r16_i32,0);
         main.func_code.return_imm16(subop_return_u16, 0);
     }
     // 添加 add 函数
     {
         auto &add = file.areafunc.genItem();
         add.name_index = file.areastr.addItem("add(int32 a,int32 b)->int32");
-        add.arg_count = 2;
-        add.reg_count = 3;
+        add.arg_count = 3;
+        add.reg_count = 4;
         add.func_flag = airvm_bcfmt_func_static | airvm_bcfmt_func_public;
         // 运行代码
         add.func_code.math3_r4(subop_math3_add_i32, 0, 1, 2);
+        add.func_code.math3_r4(subop_math3_add_i32, 0, 0, 3);
         add.func_code.return_reg(subop_return_r16_i32, 0);
     }
     // 写入文件
