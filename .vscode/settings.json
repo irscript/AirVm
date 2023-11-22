@@ -60,6 +60,18 @@
         "airvm_const_r8_subop.inl": "c",
         "airvm_const_r8.inl": "c",
         "airvm_goto.inl": "c",
-        "airvm_jbrz_r4_imm12.inl": "c"
+        "airvm_jbrz_r4_imm12.inl": "c",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "string_view": "cpp",
+        "numbers": "cpp"
     }
 }

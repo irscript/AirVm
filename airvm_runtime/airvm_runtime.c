@@ -1,9 +1,12 @@
 #include "airvm_runtime.h"
 #include "airvm_opcode.h"
 
+#include "airvm_bcfmt.h"
+#include "airvm_bcfmt_enum.h"
+
+#include <math.h>
 #include <stdatomic.h>
 #include <stdio.h>
-#include <math.h>
 
 // 函数栈帧
 typedef struct airvm_funcstack *airvm_funcstack_t;
@@ -45,28 +48,157 @@ struct airvm_actuator
 // 虚拟机执行的函数
 struct airvm_function
 {
-    uint16_t reg_count; // 函数需要的寄存器数量
-    uint16_t arg_count; // 函数的参数数量
-    uint32_t ins_count; // 函数的指令条数（以 uint16_t 为单位）
-    uint16_t ins_set[]; // 指令数据
+    uint32_t func_flag;  // 函数标记
+    uint32_t name_index; // 名称字符串索引
+    uintptr_t func_data; // 背景数据地址
+    uint16_t reg_count;  // 函数需要的寄存器数量
+    uint16_t arg_count;  // 函数的参数数量
+    uint32_t ins_count;  // 函数的指令条数（以 uint16_t 为单位）
+    uint16_t ins_set[];  // 指令数据
 };
+
+// 全局字节码文件存储
+uint32_t gVMFiles = 0;
+bcfmt_file_t gVMFilev[1024] = {};
+
 // 虚拟机环境初始化
 uintptr_t airvm_init(const airvm_config *config)
 {
+    // 加载文件
+    uintptr_t content = airvm_load_file(config->mainfile);
+    // 分析文件
+    if (airvm_parse_file(content) == 0)
+    {
+        return content;
+    }
+    printf("\n%s: Failed to parse file!\n", ((bcfmt_file_t)(content))->filename.str);
+    return 0;
 }
 // 虚拟机环境终结化
 void airvm_terminal()
 {
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+        airvm_unload_file((uintptr_t *)&gVMFilev[i]);
 }
 
 uintptr_t airvm_load_file(const char *path)
 {
-    return 0;
+    // 分配文件信息内存
+    uintptr_t nlen = strlen(path);
+    uintptr_t size = sizeof(bcfmt_file) + nlen + 1;
+    bcfmt_file_t file = malloc(size);
+    memset(file, 0, size);
+    // 文件名称拷贝
+    file->filename.len = nlen;
+    memcpy_s((char *)file->filename.str, nlen, path, nlen);
+
+// 加载文件数据
+#ifdef Airvm_Plat_Window
+    file->fileHD = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL,
+                              OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    file->size = GetFileSize(file->fileHD, NULL);
+    file->mapHD = CreateFileMapping(file->fileHD, NULL, PAGE_WRITECOPY, 0, file->size, NULL);
+
+    file->address = (uintptr_t)MapViewOfFile(file->mapHD, FILE_MAP_COPY, 0, 0, 0);
+#endif
+    // 记录句柄
+    gVMFilev[gVMFiles] = file;
+    ++gVMFiles;
+    return (uintptr_t)file;
+}
+
+void airvm_unload_file(uintptr_t *handle)
+{
+    if (*handle == 0)
+        return;
+
+    bcfmt_file_t file = (bcfmt_file_t)*handle;
+
+#ifdef Airvm_Plat_Window
+    UnmapViewOfFile((LPVOID)file->address);
+    CloseHandle((HANDLE)file->mapHD);
+    CloseHandle((HANDLE)file->fileHD);
+#endif
+
+    free((void *)*handle);
+    *handle = 0;
 }
 
 int32_t airvm_parse_file(uintptr_t handle)
 {
+    if (handle == 0)
+        return -1;
+    bcfmt_file_t file = (bcfmt_file_t)handle;
+    if (file->address == 0)
+        return -1;
+
+    file->header = (bcfmt_header_t *)file->address;
+    file->segtab = (bcfmt_segtab_t *)(file->address + sizeof(bcfmt_header_t));
+
+    // 段后数据偏移
+    uintptr_t offset = sizeof(bcfmt_header_t) + sizeof(uint32_t) * (file->segtab->count * 2 + 1);
+    // 获取各部分数据的地址
+    for (uint32_t i = 0; i < file->segtab->count; ++i)
+    {
+        switch (file->segtab->item[i].kind)
+        {
+        case airvm_bcfmt_segtab_item_kind_string_table:
+        {
+            file->tabstr = (bcfmt_strstab_t *)(file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+        case airvm_bcfmt_segtab_item_kind_string_data:
+        {
+            file->areastr = (file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+        case airvm_bcfmt_segtab_item_kind_function_table:
+        {
+            file->tabfunc = (bcfmt_functab_t *)(file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+        case airvm_bcfmt_segtab_item_kind_function_data:
+        {
+            file->areafunc = (file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+
+        default:
+        {
+            printf("%s: Unknown segment type( 0x%X )!\n",
+                   file->filename.str, file->segtab->item[i].kind);
+            exit(-1);
+        }
+        break;
+        }
+    }
+
+    // 开始分析各索引的地址
+    for (uint32_t i = 0; i < file->tabstr->count; ++i)
+    {
+        file->tabstr->item[i] = (bcfmt_string_t *)(file->areastr + (uintptr_t)(file->tabstr->item[i]));
+        // printf("%d:%s\n",file->tabstr->item[i]->len,file->tabstr->item[i]->str);
+    }
+    for (uint32_t i = 0; i < file->tabfunc->count; ++i)
+    {
+        file->tabfunc->item[i] = (file->areafunc + (uintptr_t)(file->tabfunc->item[i]));
+        // printf("%d:%s\n",file->tabstr->item[i]->len,file->tabstr->item[i]->str);
+    }
+
     return 0;
+}
+
+airvm_func_t airvm_get_entry(uintptr_t handle)
+{
+    bcfmt_file_t file = (bcfmt_file_t)handle;
+    uint32_t serial = file->header->flag;
+    assert(serial < file->tabfunc->count);
+    airvm_func_t entry = (airvm_func_t)file->tabfunc->item[serial];
+    return entry;
 }
 
 airvm_actor_t airvm_alloc_actor()
@@ -138,6 +270,64 @@ void airvm_set_func(airvm_actor_t actor, airvm_func_t func)
         ins_cout = func->ins_count;  \
     } while (0);
 
+// 处理函数调用的通用公共代码
+#define inscallfunc()               \
+    do                              \
+    {                               \
+        statck = actor->stack;      \
+        reg = statck->reg_set;      \
+        pc = &statck->PC;           \
+        func = statck->func;        \
+        reg_cout = func->reg_count; \
+        insarr = func->ins_set;     \
+        ins_cout = func->ins_count; \
+    } while (0);
+
+// 通过编号获取函数
+static inline airvm_func_t airvm_get_func(airvm_func_t current, uint32_t serial)
+{
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+    {
+        uintptr_t start = gVMFilev[i]->address;
+        uintptr_t end = start + gVMFilev[i]->size;
+        if (start < (uintptr_t)current && (uintptr_t)current < end)
+        {
+            if (serial < gVMFilev[i]->tabfunc->count)
+                return (airvm_func_t)gVMFilev[i]->tabfunc->item[serial];
+            else
+            {
+                printf("%s: 函数编号溢出 %u < %u!",
+                       gVMFilev[i]->filename.str,
+                       gVMFilev[i]->tabfunc->count - 1, serial);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+// 获取函数的名称
+static inline bcfmt_string_t *airvm_get_func_name(airvm_func_t current)
+{
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+    {
+        uintptr_t start = gVMFilev[i]->address;
+        uintptr_t end = start + gVMFilev[i]->size;
+        if (start < (uintptr_t)current && (uintptr_t)current < end)
+        {
+            if (current->name_index < gVMFilev[i]->tabstr->count)
+                return gVMFilev[i]->tabstr->item[current->name_index];
+            else
+            {
+                printf("%s: 函数名称字符串编号溢出 %u < %u!",
+                       gVMFilev[i]->filename.str,
+                       gVMFilev[i]->tabfunc->count - 1, current->name_index);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
 void airvm_run(airvm_actor_t actor)
 {
     airvm_funcstack_t statck = actor->stack;
@@ -189,31 +379,31 @@ void airvm_run(airvm_actor_t actor)
 
         // 数据加载、存储: op subop,des,src,offset
         /*#include "inline/airvm_ldst_r4.inl"
-        #include "inline/airvm_ldst_r8.inl"
         #include "inline/airvm_ldst_r16.inl"
+        #include "inline/airvm_ldst_r8.inl"
         */
 
         // 数学二地址码：op subop,des,src  : src => des
-#include "inline/airvm_math2_r8.inl"
 #include "inline/airvm_math2_r16.inl"
+#include "inline/airvm_math2_r8.inl"
         // 数学三地址运算子码
+#include "inline/airvm_math3_r16.inl"
 #include "inline/airvm_math3_r4.inl"
 #include "inline/airvm_math3_r8.inl"
-#include "inline/airvm_math3_r16.inl"
         // 直接跳转指令 goto imm
 #include "inline/airvm_goto.inl"
         // 分支跳转指令：jbrz subop,src,imm
-#include "inline/airvm_jbrz_r4_imm12.inl"
-#include "inline/airvm_jbrz_r8_imm8.inl"
-#include "inline/airvm_jbrz_r8_imm24.inl"
 #include "inline/airvm_jbrz_r16_imm16.inl"
 #include "inline/airvm_jbrz_r16_imm32.inl"
+#include "inline/airvm_jbrz_r4_imm12.inl"
+#include "inline/airvm_jbrz_r8_imm24.inl"
+#include "inline/airvm_jbrz_r8_imm8.inl"
         // 分支跳转指令：jbr subop,src,src2,imm
+#include "inline/airvm_jbr_r16_imm16.inl"
+#include "inline/airvm_jbr_r16_imm32.inl"
 #include "inline/airvm_jbr_r4_imm8.inl"
 #include "inline/airvm_jbr_r8_imm16.inl"
 #include "inline/airvm_jbr_r8_imm32.inl"
-#include "inline/airvm_jbr_r16_imm16.inl"
-#include "inline/airvm_jbr_r16_imm32.inl"
         // 返回指令
 #include "inline/airvm_return.inl"
         // 返回值获取
@@ -228,7 +418,7 @@ void airvm_run(airvm_actor_t actor)
             {
                 // 主机函数调用
                 // func subop,dllserial,funcserial,argcnt,arg,arg1,...,argn
-            case subop_call_r4_native_func: // 8-8-16-32-8,4-4-4-...-4
+            case subop_call_r4_native_func: // 8-8-16-32-4,4-4-4-...-4
             {
                 // dll动态库编号
                 uint32_t dllserial = insarr[*pc + 1];
@@ -239,6 +429,56 @@ void airvm_run(airvm_actor_t actor)
 
                 insresult("%4X: call_r4_native_func \tr%d resault:%d\n", *pc);
                 *pc += 2;
+                continue;
+            }
+            break;
+                // 静态函数调用:func subop,funcserial,argcnt,arg,arg1,...,argn
+            case subop_call_r4_static_func: // 8-8-32-4,4-4-4-...-4
+            {
+                // 静态函数编号
+                uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
+                // 获取参数数量
+                uint32_t argcnt = insarr[*pc + 3] & 0xF;
+                uint32_t align = (argcnt + 3) & (~3);
+                // 计算并偏移量
+                uint32_t shift = 3 + align / 4;
+                insresult("%4X: call_r4_static_func\n", *pc);
+                *pc += shift;
+                // 获取函数地址
+                airvm_func_t call = airvm_get_func(func, funcserial);
+                assert(call != 0 && call->arg_count == argcnt);
+                // 构建栈并传递参数
+                airvm_build_stack(actor, call);
+                insresult("\t%u : %s \n\targ: %u\n", funcserial, airvm_get_func_name(call)->str, argcnt);
+                if (argcnt != 0)
+                {
+                    uint32_t argshift = call->reg_count - call->arg_count;
+                    uint32_t *argreg = &(actor->stack->reg_set[argshift]);
+                    uint8_t *arv = (uint8_t *)&insarr[*pc + 3];
+
+                    // 取第一个参数寄存器
+                    uint32_t ari = (*arv) >> 4;
+                    argreg[0] = reg[ari];
+                    insresult("\tr%d: 0x%X\t%d\t%f\n", ari, argreg[0], argreg[0], argreg[0]);
+                    ++arv;
+                    ++argreg;
+                    argcnt -= 1;
+                    for (uint32_t i = 0; i < argcnt; ++i)
+                    {
+                        if (i % 2 == 0)
+                            ari = (*arv) & 0xF;
+                        else
+                        {
+                            ari = (*arv) >> 4;
+                            ++arv;
+                        }
+                        argreg[i] = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, argreg[i], argreg[i], argreg[i]);
+                    }
+                }
+                insresult("\n\tresult: %X\n\n", *pc);
+                // 更新运行参数
+                inscallfunc();
                 continue;
             }
             break;

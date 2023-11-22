@@ -9,7 +9,7 @@ typedef void (*airvm_native_func_t)();        // 插件提供的本地函数
 
 typedef struct
 {
-    const char *exefile; // 可执行文件格式
+    const char *mainfile; // 可执行文件格式
 } airvm_config;
 
 // 虚拟机环境初始化
@@ -18,8 +18,13 @@ uintptr_t airvm_init(const airvm_config *config);
 void airvm_terminal();
 // 加载文件
 uintptr_t airvm_load_file(const char *path);
+// 释放文件
+void airvm_unload_file(uintptr_t *handle);
 // 分析文件
 int32_t airvm_parse_file(uintptr_t handle);
+
+// 从句柄中获取入口函数
+airvm_func_t airvm_get_entry(uintptr_t handle);
 
 // 获取一个执行器上下文
 airvm_actor_t airvm_alloc_actor();

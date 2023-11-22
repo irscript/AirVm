@@ -15,4 +15,8 @@ typedef struct
     const uint8_t data[]; // 字符串内容
 } string_t;
 
+#define Airvm_Plat_Window
+
+//#define Airvm_Plat_Linux
+
 #endif // __PRECOMPILED_INC__
