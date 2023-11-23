@@ -14,6 +14,11 @@ target("airvm_runtime")
     set_pcheader("airvm_runtime/Precompiled.h")
     add_files("airvm_runtime/*.c")
 
+target("libtest")
+    set_kind("shared")
+    add_includedirs("./airvm_nat_test")
+    add_files("airvm_nat_test/*.c")
+
 --汇编器
 target("airvm_builder")
     set_kind("binary")

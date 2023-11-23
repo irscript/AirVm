@@ -61,6 +61,14 @@ struct airvm_function
 uint32_t gVMFiles = 0;
 bcfmt_file_t gVMFilev[1024] = {};
 
+// 全局接口
+airvm_interface_t gVMINF = {
+    .airvm_alloc_actor = airvm_alloc_actor,
+    .airvm_free_actor = airvm_free_actor,
+    .airvm_set_func = airvm_set_func,
+    .airvm_run = airvm_run,
+};
+
 // 虚拟机环境初始化
 uintptr_t airvm_init(const airvm_config *config)
 {
@@ -124,6 +132,36 @@ void airvm_unload_file(uintptr_t *handle)
     *handle = 0;
 }
 
+static inline void airvm_load_dll_files(bcfmt_file_t file)
+{
+    for (uint32_t i = 0; i < file->tabnat->count; ++i)
+    {
+        bcfmt_string_t *name = file->tabstr->item[file->tabnat->item[i].name];
+#ifdef Airvm_Plat_Window
+        HANDLE dll = LoadLibrary(name->str);
+        if (dll == 0)
+        {
+            printf("%s: File does not exist!\n", name->str);
+            exit(-1);
+        }
+        airvm_native_init init = (airvm_native_init)GetProcAddress(dll, "nat_dll_init");
+        if (init == 0)
+        {
+            printf("%s: Func( nat_dll_init ) does not exist!\n", name->str);
+            exit(-1);
+        }
+        airvm_native_mate_t meta = init(&gVMINF, file->tabnat->item[i].version);
+        if (meta == 0)
+        {
+            printf("%s: Version Incompatible!\n", name->str);
+            exit(-1);
+        }
+        file->tabnat->item[i].handle = (uintptr_t)dll;
+        file->tabnat->item[i].nat = meta;
+#endif
+    }
+}
+
 int32_t airvm_parse_file(uintptr_t handle)
 {
     if (handle == 0)
@@ -142,6 +180,7 @@ int32_t airvm_parse_file(uintptr_t handle)
     {
         switch (file->segtab->item[i].kind)
         {
+            // 字符串信息
         case airvm_bcfmt_segtab_item_kind_string_table:
         {
             file->tabstr = (bcfmt_strstab_t *)(file->address + offset + file->segtab->item[i].offset);
@@ -154,6 +193,14 @@ int32_t airvm_parse_file(uintptr_t handle)
             continue;
         }
         break;
+        // 主机插件
+        case airvm_bcfmt_segtab_item_kind_host_dll:
+        {
+            file->tabnat = (bcfmt_nattab_t *)(file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+        // 函数信息
         case airvm_bcfmt_segtab_item_kind_function_table:
         {
             file->tabfunc = (bcfmt_functab_t *)(file->address + offset + file->segtab->item[i].offset);
@@ -181,14 +228,15 @@ int32_t airvm_parse_file(uintptr_t handle)
     for (uint32_t i = 0; i < file->tabstr->count; ++i)
     {
         file->tabstr->item[i] = (bcfmt_string_t *)(file->areastr + (uintptr_t)(file->tabstr->item[i]));
-        // printf("%d:%s\n",file->tabstr->item[i]->len,file->tabstr->item[i]->str);
+        printf("%d:%s\n", file->tabstr->item[i]->len, file->tabstr->item[i]->str);
     }
     for (uint32_t i = 0; i < file->tabfunc->count; ++i)
     {
         file->tabfunc->item[i] = (file->areafunc + (uintptr_t)(file->tabfunc->item[i]));
         // printf("%d:%s\n",file->tabstr->item[i]->len,file->tabstr->item[i]->str);
     }
-
+    // 加载dll库
+    airvm_load_dll_files(file);
     return 0;
 }
 
@@ -296,7 +344,7 @@ static inline airvm_func_t airvm_get_func(airvm_func_t current, uint32_t serial)
                 return (airvm_func_t)gVMFilev[i]->tabfunc->item[serial];
             else
             {
-                printf("%s: 函数编号溢出 %u < %u!",
+                printf("%s: Function number overflow %u < %u!",
                        gVMFilev[i]->filename.str,
                        gVMFilev[i]->tabfunc->count - 1, serial);
                 return 0;
@@ -318,9 +366,33 @@ static inline bcfmt_string_t *airvm_get_func_name(airvm_func_t current)
                 return gVMFilev[i]->tabstr->item[current->name_index];
             else
             {
-                printf("%s: 函数名称字符串编号溢出 %u < %u!",
+                printf("%s: Function name string number overflow %u < %u!",
                        gVMFilev[i]->filename.str,
                        gVMFilev[i]->tabfunc->count - 1, current->name_index);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+// 获取插件函数
+static inline airvm_native_func_t *airvm_get_native_func(airvm_func_t current, uint16_t dll, uint32_t func)
+{
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+    {
+        uintptr_t start = gVMFilev[i]->address;
+        uintptr_t end = start + gVMFilev[i]->size;
+        if (start < (uintptr_t)current && (uintptr_t)current < end)
+        {
+            if (dll < gVMFilev[i]->tabnat->count && func < gVMFilev[i]->tabnat->item[dll].nat->tabfun->fun_count)
+            {
+                return &(gVMFilev[i]->tabnat->item[dll].nat->tabfun->funcs[func]);
+            }
+            else
+            {
+                printf("%s: Dll or Function number overflow ! dll: %u  func: %u  \n",
+                       gVMFilev[i]->filename.str,
+                       dll, func);
                 return 0;
             }
         }
@@ -425,13 +497,152 @@ void airvm_run(airvm_actor_t actor)
                 // 主机函数编号
                 uint32_t funcserial = (insarr[*pc + 3] << 16) | insarr[*pc + 2];
                 // 获取参数数量
-                uint32_t argcnt = insarr[*pc + 3] & 0xFF;
+                uint32_t argcnt = insarr[*pc + 4] & 0xF;
+                uint32_t align =  (argcnt + 4) & (~3);
+                // 计算并偏移量
+                uint32_t shift = 4 + align / 4;
+                insresult("%4X: call_r4_native_func\n", *pc);
+                // 获取主机函数接口
+                airvm_native_func_t *nat = airvm_get_native_func(func, dllserial, funcserial);
+                assert(nat != 0);
+                insresult("\t%u-%u : %s \n\targ: %u\n", dllserial, funcserial, nat->name->str, argcnt);
 
-                insresult("%4X: call_r4_native_func \tr%d resault:%d\n", *pc);
-                *pc += 2;
+                // 分配并填充参数
+                uint32_t *argv = NULL;
+                if (argcnt != 0)
+                {
+                    argv = (uint32_t *)malloc(argcnt * sizeof(uint32_t));
+                    uint32_t *argreg = argv;
+                    uint8_t *arv = (uint8_t *)&insarr[*pc + 4];
+
+                    // 取第一个参数寄存器
+                    uint32_t ari = (*arv) >> 4;
+                    *argreg = reg[ari];
+                    insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
+                    ++arv;
+                    ++argreg;
+                    uint32_t argcnt2 = argcnt - 1;
+                    for (uint32_t i = 0; i < argcnt2; ++i)
+                    {
+                        if (i % 2 == 0)
+                            ari = (*arv) & 0xF;
+                        else
+                        {
+                            ari = (*arv) >> 4;
+                            ++arv;
+                        }
+                        *argreg = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
+                        ++argreg;
+                    }
+                }
+                // 调用函数
+                uintptr_t ret = nat->entry(argcnt, argv, (uintptr_t)&actor->ptr);
+                // 释放参数
+                if (argv != 0)
+                    free(argv);
+
+                *pc += shift;
                 continue;
             }
             break;
+
+            // 主机函数调用
+            // func subop,dllserial,funcserial,argcnt,arg,arg1,...,argn
+            case subop_call_r8_native_func: // 8-8-16-32-8,8-8-8-...-8
+            {
+                // dll动态库编号
+                uint32_t dllserial = insarr[*pc + 1];
+                // 主机函数编号
+                uint32_t funcserial = (insarr[*pc + 3] << 16) | insarr[*pc + 2];
+                // 获取参数数量
+                uint32_t argcnt = insarr[*pc + 4] & 0xFF;
+                uint32_t align = (argcnt + 2) & (~1);
+                // 计算并偏移量
+                uint32_t shift = 4 + align / 2;
+                insresult("%4X: call_r8_native_func\n", *pc);
+                // 获取主机函数接口
+                airvm_native_func_t *nat = airvm_get_native_func(func, dllserial, funcserial);
+                assert(nat != 0);
+                insresult("\t%u-%u : %s \n\targ: %u\n", dllserial, funcserial, nat->name->str, argcnt);
+
+                // 分配并填充参数
+                uint32_t *argv = NULL;
+                if (argcnt != 0)
+                {
+                    argv = (uint32_t *)malloc(argcnt * sizeof(uint32_t));
+                    uint32_t *argreg = argv;
+                    uint8_t *arv = (uint8_t *)&insarr[*pc + 4];
+                    arv += 1;
+
+                    uint32_t ari = 0;
+
+                    for (uint32_t i = 0; i < argcnt; ++i)
+                    {
+                        ari = (*arv);
+                        ++arv;
+                        *argreg = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
+                        ++argreg;
+                    }
+                }
+                // 调用函数
+                uintptr_t ret = nat->entry(argcnt, argv, (uintptr_t)&actor->ptr);
+                // 释放参数
+                if (argv != 0)
+                    free(argv);
+
+                *pc += shift;
+                continue;
+            }
+            break;
+            // 主机函数调用
+            // func subop,dllserial,funcserial,argcnt,arg,arg1,...,argn
+            case subop_call_r16_native_func: // 8-8-16-32-16,16-16-16-...-16
+            {
+                // dll动态库编号
+                uint32_t dllserial = insarr[*pc + 1];
+                // 主机函数编号
+                uint32_t funcserial = (insarr[*pc + 3] << 16) | insarr[*pc + 2];
+                // 获取参数数量
+                uint32_t argcnt = insarr[*pc + 4];
+                // 计算并偏移量
+                uint32_t shift = 5 + argcnt;
+                insresult("%4X: call_r16_native_func\n", *pc);
+                // 获取主机函数接口
+                airvm_native_func_t *nat = airvm_get_native_func(func, dllserial, funcserial);
+                assert(nat != 0);
+                insresult("\t%u-%u : %s \n\targ: %u\n", dllserial, funcserial, nat->name->str, argcnt);
+
+                // 分配并填充参数
+                uint32_t *argv = NULL;
+                if (argcnt != 0)
+                {
+                    argv = (uint32_t *)malloc(argcnt * sizeof(uint32_t));
+                    uint32_t *argreg = argv;
+                    uint16_t *arv = (uint16_t *)&insarr[*pc + 5];
+                    uint32_t ari = 0;
+
+                    for (uint32_t i = 0; i < argcnt; ++i)
+                    {
+                        ari = (*arv);
+                        ++arv;
+                        *argreg = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
+                        ++argreg;
+                    }
+                }
+                // 调用函数
+                uintptr_t ret = nat->entry(argcnt, argv, (uintptr_t)&actor->ptr);
+                // 释放参数
+                if (argv != 0)
+                    free(argv);
+
+                *pc += shift;
+                continue;
+            }
+            break;
+
                 // 静态函数调用:func subop,funcserial,argcnt,arg,arg1,...,argn
             case subop_call_r4_static_func: // 8-8-32-4,4-4-4-...-4
             {
@@ -439,7 +650,7 @@ void airvm_run(airvm_actor_t actor)
                 uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
                 // 获取参数数量
                 uint32_t argcnt = insarr[*pc + 3] & 0xF;
-                uint32_t align = (argcnt + 3) & (~3);
+                uint32_t align = (argcnt + 4) & (~3);
                 // 计算并偏移量
                 uint32_t shift = 3 + align / 4;
                 insresult("%4X: call_r4_static_func\n", *pc);
@@ -458,7 +669,7 @@ void airvm_run(airvm_actor_t actor)
                     // 取第一个参数寄存器
                     uint32_t ari = (*arv) >> 4;
                     *argreg = reg[ari];
-                    insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, (flt32_t)*argreg);
+                    insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
                     ++arv;
                     ++argreg;
                     argcnt -= 1;
@@ -472,7 +683,93 @@ void airvm_run(airvm_actor_t actor)
                             ++arv;
                         }
                         *argreg = reg[ari];
-                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, (flt32_t)*argreg);
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
+                        ++argreg;
+                    }
+                }
+
+                *pc += shift;
+                insresult("\n\tresult: %X\n\n", *pc);
+                // 更新运行参数
+                inscallfunc();
+                continue;
+            }
+            break;
+
+                // 静态函数调用:func subop,funcserial,argcnt,arg,arg1,...,argn
+            case subop_call_r8_static_func: // 8-8-32-8,8-8-8-...-8
+            {
+                // 静态函数编号
+                uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
+                // 获取参数数量
+                uint32_t argcnt = insarr[*pc + 3] & 0xFF;
+                uint32_t align =  (argcnt + 2) & (~1);
+                // 计算并偏移量
+                uint32_t shift = 3 + align / 2;
+                insresult("%4X: call_r8_static_func\n", *pc);
+                // 获取函数地址
+                airvm_func_t call = airvm_get_func(func, funcserial);
+                assert(call != 0 && call->arg_count == argcnt);
+                // 构建栈并传递参数
+                airvm_build_stack(actor, call);
+                insresult("\t%u : %s \n\targ: %u\n", funcserial, airvm_get_func_name(call)->str, argcnt);
+                if (argcnt != 0)
+                {
+                    uint32_t argshift = call->reg_count - call->arg_count;
+                    uint32_t *argreg = &(actor->stack->reg_set[argshift]);
+                    uint8_t *arv = (uint8_t *)&insarr[*pc + 3];
+                    arv += 1;
+
+                    uint32_t ari = 0;
+
+                    for (uint32_t i = 0; i < argcnt; ++i)
+                    {
+                        ari = (*arv);
+                        ++arv;
+                        *argreg = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
+                        ++argreg;
+                    }
+                }
+
+                *pc += shift;
+                insresult("\n\tresult: %X\n\n", *pc);
+                // 更新运行参数
+                inscallfunc();
+                continue;
+            }
+            break;
+                // 静态函数调用:func subop,funcserial,argcnt,arg,arg1,...,argn
+            case subop_call_r16_static_func: // 8-8-32-16,16-16-16-...-16
+            {
+                // 静态函数编号
+                uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
+                // 获取参数数量
+                uint32_t argcnt = insarr[*pc + 3];
+                // 计算并偏移量
+                uint32_t shift = 4 + argcnt;
+                insresult("%4X: call_r16_static_func\n", *pc);
+                // 获取函数地址
+                airvm_func_t call = airvm_get_func(func, funcserial);
+                assert(call != 0 && call->arg_count == argcnt);
+                // 构建栈并传递参数
+                airvm_build_stack(actor, call);
+                insresult("\t%u : %s \n\targ: %u\n", funcserial, airvm_get_func_name(call)->str, argcnt);
+                if (argcnt != 0)
+                {
+                    uint32_t argshift = call->reg_count - call->arg_count;
+                    uint32_t *argreg = &(actor->stack->reg_set[argshift]);
+                    uint16_t *arv = (uint16_t *)&insarr[*pc + 4];
+                    // arv += 1;
+
+                    uint32_t ari = 0;
+
+                    for (uint32_t i = 0; i < argcnt; ++i)
+                    {
+                        ari = (*arv);
+                        ++arv;
+                        *argreg = reg[ari];
+                        insresult("\tr%d: 0x%X\t%d\t%f\n", ari, *argreg, *argreg, *(flt32_t *)argreg);
                         ++argreg;
                     }
                 }

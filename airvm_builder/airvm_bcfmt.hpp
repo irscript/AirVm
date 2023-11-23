@@ -145,15 +145,48 @@ struct bcfmt_funcarea_t
     }
 };
 
+// dll插件
+struct bcfmt_nat_t
+{
+    struct Item
+    {
+        uint32_t name;    // 名称字符串索引
+        uint32_t version; // 版本号
+        // uintptr_t meta;   // 插件信息元地址
+    };
+    std::vector<Item> items;
+
+    Item &genItem() { return items.emplace_back(); }
+    airvm_code_buffer_t content;
+
+    void build()
+    {
+        if (items.empty())
+            return;
+        content.emiter8(items.size());
+        for (auto &item : items)
+        {
+            content.emiter4(item.name);
+            content.emiter4(item.version);
+            content.emiter8(0);
+            content.emiter8(0);
+        }
+    }
+};
+
 // 字节码文件
 struct bcfmt_file_t
 {
     bcfmt_header_t header;
     bcfmt_segtab_t segtab;
+
     bcfmt_strstab_t tabstr;
     bcfmt_strsarea_t areastr;
+
     bcfmt_functab_t tabfunc;
     bcfmt_funcarea_t areafunc;
+
+    bcfmt_nat_t tabnat;
 
     bcfmt_file_t()
     {
@@ -166,6 +199,8 @@ struct bcfmt_file_t
 
         // 计算字符串数据
         areastr.build(tabstr);
+        // 计算 dll 数据
+        tabnat.build();
         // 计算函数数据
         areafunc.build(tabfunc);
 
@@ -176,6 +211,13 @@ struct bcfmt_file_t
         offset += tabstr.items.size() * sizeof(uintptr_t) + sizeof(uintptr_t);
         segtab.addItem(airvm_bcfmt_segtab_item_kind_string_data, offset);
         offset += tabstr.content.buffer.size();
+        // 计算插件表
+        if (tabnat.content.buffer.empty() == false)
+        {
+            segtab.addItem(airvm_bcfmt_segtab_item_kind_host_dll, offset);
+            offset += tabnat.content.buffer.size();
+        }
+
         // 计算函数表区
         segtab.addItem(airvm_bcfmt_segtab_item_kind_function_table, offset);
         offset += tabfunc.items.size() * sizeof(uintptr_t) + sizeof(uintptr_t);
@@ -233,7 +275,11 @@ struct bcfmt_file_t
         for (auto &item : tabstr.content.buffer)
             data.emiter(item);
 
-        // 计算函数表区
+        // 插件库
+        for (auto &item : tabnat.content.buffer)
+            data.emiter(item);
+
+        // 函数表区
         data.emiter8(tabfunc.items.size());
         for (auto &item : tabfunc.items)
             data.emiter8(item);

@@ -10,10 +10,10 @@ enum airvm_bcfmt_enum
     // 指令版本
     airvm_bcfmt_header_instruction_version = 0 << 8 | 1,
     // 文件类别
-    airvm_bcfmt_header_file_kind_exe = 'E' << 16 | 'X' << 8 | 'E', // 可执行文件
-    airvm_bcfmt_header_file_kind_dll = 'D' << 16 | 'L' << 8 | 'L', // 动态库文件
-    airvm_bcfmt_header_file_kind_lib = 'L' << 16 | 'I' << 8 | 'B', // 静态库文件
-    airvm_bcfmt_header_file_kind_obj = 'O' << 16 | 'B' << 8 | 'J', // 中间文件
+    airvm_bcfmt_header_file_kind_exe = 'A' << 24 | 'E' << 16 | 'X' << 8 | 'E', // 可执行文件
+    airvm_bcfmt_header_file_kind_dll = 'A' << 24 | 'D' << 16 | 'Y' << 8 | 'N', // 动态库文件
+    airvm_bcfmt_header_file_kind_lib = 'A' << 24 | 'S' << 16 | 'L' << 8 | 'I', // 静态库文件
+    airvm_bcfmt_header_file_kind_obj = 'A' << 24 | 'O' << 16 | 'B' << 8 | 'J', // 对象文件
 
     // 段表项类别
     airvm_bcfmt_segtab_item_kind_string_table = 1u << 0, // 字符串表

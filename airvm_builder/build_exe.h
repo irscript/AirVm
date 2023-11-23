@@ -7,6 +7,13 @@ void build_exe()
     file.header.insver = airvm_bcfmt_header_instruction_version;
     file.header.kind = airvm_bcfmt_header_file_kind_exe;
 
+    // 添加dll项
+    {
+        auto &dll = file.tabnat.genItem();
+        dll.name = file.areastr.addItem("liblibtest.dll");
+        dll.version = 1;
+    }
+
     // 添加 main 函数
     {
         auto &main = file.areafunc.genItem();
@@ -18,13 +25,69 @@ void build_exe()
         main.func_code.const_r4_imm4(op_const_w32_r4_i4, 0, -2);
         main.func_code.const_r4_imm4(op_const_w32_r4_u4, 1, 15);
         main.func_code.const_r4_imm4(op_const_w32_r4_u4, 2, 15);
+
+        // 调用静态函数
         std::vector<uint8_t> arg;
         arg.push_back(3);
         arg.push_back(0);
         arg.push_back(1);
         arg.push_back(2);
         main.func_code.call_r4_static_func(1, arg);
-        main.func_code.getret_reg(subop_getret_w32_r16_i32,0);
+        main.func_code.getret_reg(subop_getret_w32_r16_i32, 0);
+
+        main.func_code.call_r8_static_func(1, arg);
+        main.func_code.getret_reg(subop_getret_w32_r16_i32, 0);
+
+        std::vector<uint16_t> arg2;
+        arg2.push_back(3);
+        arg2.push_back(0);
+        arg2.push_back(1);
+        arg2.push_back(2);
+        main.func_code.call_r16_static_func(1, arg2);
+        main.func_code.getret_reg(subop_getret_w32_r16_i32, 0);
+
+        // 调用dll函数
+        std::vector<uint8_t> natarg;
+        natarg.push_back(0);
+        main.func_code.call_r4_native_func(0, 0, natarg);
+        natarg.clear();
+        natarg.push_back(1);
+        natarg.push_back(0);
+        main.func_code.call_r4_native_func(0, 1, natarg);
+        natarg.clear();
+        natarg.push_back(2);
+        natarg.push_back(0);
+        natarg.push_back(0);
+        main.func_code.call_r4_native_func(0, 2, natarg);
+
+        natarg.clear();
+        natarg.push_back(0);
+        main.func_code.call_r8_native_func(0, 0, natarg);
+        natarg.clear();
+        natarg.push_back(1);
+        natarg.push_back(0);
+        main.func_code.call_r8_native_func(0, 1, natarg);
+        natarg.clear();
+        natarg.push_back(2);
+        natarg.push_back(0);
+        natarg.push_back(0);
+        main.func_code.call_r8_native_func(0, 2, natarg);
+
+        {
+            std::vector<uint16_t> natarg;
+            natarg.push_back(0);
+            main.func_code.call_r16_native_func(0, 0, natarg);
+            natarg.clear();
+            natarg.push_back(1);
+            natarg.push_back(0);
+            main.func_code.call_r16_native_func(0, 1, natarg);
+            natarg.clear();
+            natarg.push_back(2);
+            natarg.push_back(0);
+            natarg.push_back(0);
+            main.func_code.call_r16_native_func(0, 2, natarg);
+        }
+
         main.func_code.return_imm16(subop_return_u16, 0);
     }
     // 添加 add 函数

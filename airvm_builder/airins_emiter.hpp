@@ -304,7 +304,54 @@ struct Emiter
         code.emiter2(ins);
         code.emiter2(reg);
     }
+    // 8-8-16-32-4,4-4-4-...-4
+    // func subop,dllserial,funcserial,argcnt,arg,arg1,...,argn
+    // 参数个数，在 arg 的第一个元素
+    inline void call_r4_native_func(uint16_t dllserial, uint32_t funcserial, std::vector<uint8_t> arg)
+    {
+        uint16_t ins = (op_func_subop << 8) | subop_call_r4_native_func;
+        code.emiter2(ins);
+        code.emiter2(dllserial);
+        code.emiter4(funcserial);
+        uint32_t count = arg.size();
+        uint32_t align = (count + 3) & (~3);
+        // 进行补位
+        uint32_t mod = align - count;
+        for (uint32_t i = 0; i < mod; ++i)
+            arg.push_back(0);
 
+        count = arg.size();
+        // 进行组装
+        for (uint32_t i = 0; i < align; i += 2)
+        {
+            uint8_t val = (0xF & arg[i]) | ((0xF & arg[i + 1]) << 4);
+            code.emiter(val);
+        }
+    }
+    inline void call_r8_native_func(uint16_t dllserial,uint32_t funcserial, std::vector<uint8_t> arg)
+    {
+        uint16_t ins = (op_func_subop << 8) | subop_call_r8_native_func;
+        code.emiter2(ins);
+        code.emiter2(dllserial);
+        code.emiter4(funcserial);
+        for (auto &item : arg)
+            code.emiter(item);
+        // 2字节对齐
+        uint32_t len = arg.size();
+        if ((len % 2) != 0)
+        {
+            code.emiter(0);
+        }
+    }
+    inline void call_r16_native_func(uint16_t dllserial,uint32_t funcserial, std::vector<uint16_t> arg)
+    {
+        uint16_t ins = (op_func_subop << 8) | subop_call_r16_native_func;
+        code.emiter2(ins);
+        code.emiter2(dllserial);
+        code.emiter4(funcserial);
+        for (auto &item : arg)
+            code.emiter2(item);
+    }
     // 8-8-32-4,4-4-4-...-4
     // func subop,funcserial,argcnt,arg,arg1,...,argn
     // 参数个数，在 arg 的第一个元素
