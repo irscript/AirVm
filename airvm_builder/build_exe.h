@@ -17,7 +17,7 @@ void build_exe()
     // 添加 main 函数
     {
         auto &main = file.areafunc.genItem();
-        main.name_index = file.areastr.addItem("main(uint32 argc,cstring argv[])->int32");
+        main.name_index = file.areastr.addItem("main");
         main.arg_count = 0;
         main.reg_count = 32;
         main.func_flag = airvm_bcfmt_func_static | airvm_bcfmt_func_public;
@@ -126,6 +126,13 @@ void build_exe()
                 natarg.push_back(0);
                 main.func_code.call_r16_native_func(0, 2, natarg);
             }
+            // 回调测试
+            main.func_code.get_static_func_ptr(3, 0);
+            natarg.clear();
+            natarg.push_back(2);
+            natarg.push_back(1);
+            natarg.push_back(0);
+            main.func_code.call_r4_native_func(0, 3, natarg);
         }
 
         main.func_code.return_imm16(subop_return_u16, 0);
@@ -133,7 +140,7 @@ void build_exe()
     // 添加 add3 函数
     {
         auto &add = file.areafunc.genItem();
-        add.name_index = file.areastr.addItem("add3(int32 a,int32 b,int32 b)->int32");
+        add.name_index = file.areastr.addItem("add3");
         add.arg_count = 3;
         add.reg_count = 4;
         add.func_flag = airvm_bcfmt_func_static | airvm_bcfmt_func_public;
@@ -145,9 +152,9 @@ void build_exe()
     // 添加 add2 函数
     {
         auto &add = file.areafunc.genItem();
-        add.name_index = file.areastr.addItem("add2(int32 a,int32 b)->int32");
+        add.name_index = file.areastr.addItem("add2");
         add.arg_count = 2;
-        add.reg_count = 4;
+        add.reg_count = 3;
         add.func_flag = airvm_bcfmt_func_static | airvm_bcfmt_func_public;
         // 运行代码
         add.func_code.math3_r4(subop_math3_add_i32, 0, 1, 2);
@@ -156,7 +163,7 @@ void build_exe()
     // 添加 empty 函数
     {
         auto &add = file.areafunc.genItem();
-        add.name_index = file.areastr.addItem("empty()->int32");
+        add.name_index = file.areastr.addItem("empty");
         add.arg_count = 0;
         add.reg_count = 0;
         add.func_flag = airvm_bcfmt_func_static | airvm_bcfmt_func_public;

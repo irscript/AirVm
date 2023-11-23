@@ -328,7 +328,7 @@ struct Emiter
             code.emiter(val);
         }
     }
-    inline void call_r8_native_func(uint16_t dllserial,uint32_t funcserial, std::vector<uint8_t> arg)
+    inline void call_r8_native_func(uint16_t dllserial, uint32_t funcserial, std::vector<uint8_t> arg)
     {
         uint16_t ins = (op_func_subop << 8) | subop_call_r8_native_func;
         code.emiter2(ins);
@@ -343,7 +343,7 @@ struct Emiter
             code.emiter(0);
         }
     }
-    inline void call_r16_native_func(uint16_t dllserial,uint32_t funcserial, std::vector<uint16_t> arg)
+    inline void call_r16_native_func(uint16_t dllserial, uint32_t funcserial, std::vector<uint16_t> arg)
     {
         uint16_t ins = (op_func_subop << 8) | subop_call_r16_native_func;
         code.emiter2(ins);
@@ -396,6 +396,22 @@ struct Emiter
         code.emiter4(funcserial);
         for (auto &item : arg)
             code.emiter2(item);
+    }
+    // 获取静态函数地址 : 8-8-32-16
+    inline void get_static_func_ptr(uint32_t funcserial, uint16_t des)
+    {
+        uint16_t ins = (op_func_subop << 8) | subop_get_static_func_ptr;
+        code.emiter2(ins);
+        code.emiter4(funcserial);
+        code.emiter2(des);
+    }
+    // 获取成员函数地址 : 8-8-32-16
+    inline void get_member_func_ptr(uint32_t funcserial, uint16_t des)
+    {
+        uint16_t ins = (op_func_subop << 8) | subop_get_member_func_ptr;
+        code.emiter2(ins);
+        code.emiter4(funcserial);
+        code.emiter2(des);
     }
 };
 

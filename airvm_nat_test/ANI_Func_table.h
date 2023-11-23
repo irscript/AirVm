@@ -9,11 +9,12 @@
     }
 
 airvm_ani_func_table_t gNAIFunTab = {
-    3,
+    4,
     {
         ANI_FUNC(test),
         ANI_FUNC(print),
         ANI_FUNC(add_i32),
+        ANI_FUNC(callback),
     }};
 
 #endif // __ANI_FUNC_TABLE_INC__

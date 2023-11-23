@@ -18,12 +18,14 @@ int main()
 
      airvm_free_actor(&actor);
      */
+    // 重定向标准输出
+    // freopen("vm_log.txt","w+",stdout);
 
     airvm_config cfg;
     cfg.mainfile = "call_test.ave";
 
     uintptr_t content = airvm_init(&cfg);
-    
+
     // 获取入口函数
     airvm_func_t main = airvm_get_entry(content);
     // 分配执行器

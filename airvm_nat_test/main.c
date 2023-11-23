@@ -1,6 +1,6 @@
 #include "ANI_Func_table.h"
 
-airvm_interface_t gNatVMINF = 0;      // 记录虚拟机提供的接口
+extern airvm_interface_t gNatVMINF;   // 记录虚拟机提供的接口
 const airvm_uint32_t gNatVersion = 1; // 本库的版本
 airvm_ani_mate_t gNAIMeta = {
     1,

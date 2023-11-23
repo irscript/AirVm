@@ -105,7 +105,6 @@ enum SubOPEnum
     subop_cast_f64_to_i64,
     subop_cast_f64_to_u64,
 
-
     // -------------------------------数学二地址运算子码-----------------------------
 
     // 一元算术运算
@@ -450,20 +449,20 @@ enum SubOPEnum
     subop_call_r8_static_func,  // 8-8-32-8,8-8-8-...-8
     subop_call_r16_static_func, // 8-8-32-16,16-16-16-...-16
 
-    // 成员函数调用:func subop,funcserial,argcnt,arg,arg1,...,argn
+    // 成员函数调用:func subop,funcserial,argcnt,this,arg1,...,argn
     subop_call_r4_member_func,  // 8-8-32-4,4-4-4-...-4
     subop_call_r8_member_func,  // 8-8-32-8,8-8-8-...-8
     subop_call_r16_member_func, // 8-8-32-16,16-16-16-...-16
 
-    // 虚函数调用:func subop,funcserial,argcnt,arg,arg1,...,argn
-    subop_call_r4_virtual_func,  // 8-8-32-4,4-4-4-...-4
-    subop_call_r8_virtual_func,  // 8-8-32-8,8-8-8-...-8
-    subop_call_r16_virtual_func, // 8-8-32-16,16-16-16-...-16
+    // 虚函数调用:func subop,funcserial,argcnt,this,arg1,...,argn
+    subop_call_r4_virtual_func,  // 8-8-16-4,4-4-4-...-4
+    subop_call_r8_virtual_func,  // 8-8-16-8,8-8-8-...-8
+    subop_call_r16_virtual_func, // 8-8-16-16,16-16-16-...-16
 
-    // 接口函数调用:func subop,infserial,funcserial,argcnt,arg,arg1,...,argn
-    subop_call_r4_interface_func,  // 8-8-16-32-8,4-4-4-...-4
-    subop_call_r8_interface_func,  // 8-8-16-32-8,8-8-8-...-8
-    subop_call_r16_interface_func, // 8-8-16-32-16,16-16-16-...-16
+    // 接口函数调用:func subop,infserial,funcserial,argcnt,this,arg1,...,argn
+    subop_call_r4_interface_func,  // 8-8-16-16-8,4-4-4-...-4
+    subop_call_r8_interface_func,  // 8-8-16-16-8,8-8-8-...-8
+    subop_call_r16_interface_func, // 8-8-16-16-16,16-16-16-...-16
 
     // 获取主机函数地址:func subop,dllserial,funcserial,des
     subop_get_native_func_ptr, // 8-8-16-32-16
@@ -476,13 +475,13 @@ enum SubOPEnum
     // 获取静态函数地址:func funcserial,des
     subop_get_static_func_ptr, // 8-8-32-16
 
+    // 获取成员函数地址
+    subop_get_member_func_ptr, // 8-8-32-16
+
     // 静态函数指针调用:func subop,ptr,argcnt,arg,arg1,...,argn
     subop_call_r4_static_func_ptr,  // 8-8-4-4,4-4-4-...-4
     subop_call_r8_static_func_ptr,  // 8-8-8-8,8-8-8-...-8
     subop_call_r16_static_func_ptr, // 8-8-16-16,16-16-16-...-16
-
-    // 获取成员函数地址
-    subop_get_member_func_ptr, // 8-8-32-16
 
     // 成员函数指针调用:func subop,ptr,argcnt,arg,arg1,...,argn
     subop_call_r4_member_func_ptr,  // 8-8-4-4,4-4-4-...-4

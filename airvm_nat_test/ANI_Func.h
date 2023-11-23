@@ -3,6 +3,9 @@
 
 #include "ANI_Func_name.h"
 #include <stdio.h>
+
+airvm_interface_t gNatVMINF = 0;
+
 airvm_pointer_t test(airvm_uint32_t argc,
                      airvm_uint32_t argv[],
                      airvm_pointer_t ret)
@@ -29,4 +32,22 @@ airvm_pointer_t add_i32(airvm_uint32_t argc,
 
     return 0;
 }
+
+airvm_pointer_t callback(airvm_uint32_t argc,
+                         airvm_uint32_t argv[],
+                         airvm_pointer_t ret)
+{
+    airvm_func_t call = (airvm_func_t)argv;
+    // 分配执行器
+    airvm_actor_t actor = gNatVMINF->airvm_alloc_actor();
+    // 设置运行函数
+    gNatVMINF->airvm_set_func(actor, call);
+    // 运行函数
+    gNatVMINF->airvm_run(actor);
+    // 释放执行器
+    gNatVMINF->airvm_free_actor(&actor);
+
+    return 0;
+}
+
 #endif // __ANI_FUN_DEF_INC__

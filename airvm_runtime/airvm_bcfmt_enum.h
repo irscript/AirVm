@@ -41,7 +41,7 @@ enum airvm_bcfmt_enum
     airvm_bcfmt_func_private = 1u << 6,   // 私有的函数
 
     airvm_bcfmt_func_no_data = 1u << 30,  // 函数没有背景数据
-    airvm_bcfmt_func_data_get = 1u << 31, // 函数背景数据已加载
+    airvm_bcfmt_func_data_init = 1u << 31, // 函数背景数据已加载
 
 };
 
