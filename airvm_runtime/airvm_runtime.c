@@ -498,9 +498,9 @@ void airvm_run(airvm_actor_t actor)
                 uint32_t funcserial = (insarr[*pc + 3] << 16) | insarr[*pc + 2];
                 // 获取参数数量
                 uint32_t argcnt = insarr[*pc + 4] & 0xF;
-                uint32_t align =  (argcnt + 4) & (~3);
+                uint32_t align = (argcnt + 4) & (~3);
                 // 计算并偏移量
-                uint32_t shift = 4 + align / 4;
+                uint32_t shift = 4 + (align >> 2);
                 insresult("%4X: call_r4_native_func\n", *pc);
                 // 获取主机函数接口
                 airvm_native_func_t *nat = airvm_get_native_func(func, dllserial, funcserial);
@@ -559,7 +559,7 @@ void airvm_run(airvm_actor_t actor)
                 uint32_t argcnt = insarr[*pc + 4] & 0xFF;
                 uint32_t align = (argcnt + 2) & (~1);
                 // 计算并偏移量
-                uint32_t shift = 4 + align / 2;
+                uint32_t shift = 4 + (align >> 1);
                 insresult("%4X: call_r8_native_func\n", *pc);
                 // 获取主机函数接口
                 airvm_native_func_t *nat = airvm_get_native_func(func, dllserial, funcserial);
@@ -652,7 +652,7 @@ void airvm_run(airvm_actor_t actor)
                 uint32_t argcnt = insarr[*pc + 3] & 0xF;
                 uint32_t align = (argcnt + 4) & (~3);
                 // 计算并偏移量
-                uint32_t shift = 3 + align / 4;
+                uint32_t shift = 3 + (align >> 2);
                 insresult("%4X: call_r4_static_func\n", *pc);
                 // 获取函数地址
                 airvm_func_t call = airvm_get_func(func, funcserial);
@@ -703,9 +703,9 @@ void airvm_run(airvm_actor_t actor)
                 uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
                 // 获取参数数量
                 uint32_t argcnt = insarr[*pc + 3] & 0xFF;
-                uint32_t align =  (argcnt + 2) & (~1);
+                uint32_t align = (argcnt + 2) & (~1);
                 // 计算并偏移量
-                uint32_t shift = 3 + align / 2;
+                uint32_t shift = 3 + (align >> 1);
                 insresult("%4X: call_r8_static_func\n", *pc);
                 // 获取函数地址
                 airvm_func_t call = airvm_get_func(func, funcserial);
