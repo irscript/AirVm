@@ -130,8 +130,8 @@ void build_exe()
             main.func_code.get_static_func_ptr(3, 0);
             natarg.clear();
             natarg.push_back(2);
-            natarg.push_back(1);
             natarg.push_back(0);
+            natarg.push_back(1);
             main.func_code.call_r4_native_func(0, 3, natarg);
         }
 

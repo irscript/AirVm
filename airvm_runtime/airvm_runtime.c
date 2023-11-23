@@ -1110,7 +1110,7 @@ void airvm_run(airvm_actor_t actor)
                 // 存储函数
                 uint32_t des = insarr[*pc + 3];
                 *(uintptr_t *)&reg[des] = (uintptr_t)call;
-                insresult("%4X: get_static_func_ptr %u,\tr%d\n", *pc, funcserial, des);
+                insresult("%4X: get_static_func_ptr %u,\tr%d  ptr:0x%p\n", *pc, funcserial, des, call);
                 *pc += 4;
                 continue;
             }
