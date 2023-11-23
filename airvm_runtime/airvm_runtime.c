@@ -123,6 +123,10 @@ void airvm_unload_file(uintptr_t *handle)
     bcfmt_file_t file = (bcfmt_file_t)*handle;
 
 #ifdef Airvm_Plat_Window
+    // 释放加载的动态库
+    for (uint32_t i = 0; i < file->tabnat->count; ++i)
+        FreeLibrary((HANDLE)(file->tabnat->item[i].handle));
+
     UnmapViewOfFile((LPVOID)file->address);
     CloseHandle((HANDLE)file->mapHD);
     CloseHandle((HANDLE)file->fileHD);
