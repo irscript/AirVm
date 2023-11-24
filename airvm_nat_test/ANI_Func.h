@@ -37,13 +37,13 @@ airvm_pointer_t callback(airvm_uint32_t argc,
                          airvm_uint32_t argv[],
                          airvm_pointer_t ret)
 {
-    airvm_func_t call = *(uintptr_t*)argv;//argv[0] | (((uintptr_t)argv[1]) << 32);
+    airvm_func_t call = *(uintptr_t *)argv; // argv[0] | (((uintptr_t)argv[1]) << 32);
     printf("ptr:0x%p\n", call);
     // 分配执行器
     airvm_actor_t actor = gNatVMINF->airvm_alloc_actor();
 
     // 设置运行函数
-    gNatVMINF->airvm_set_func(actor, call);
+    gNatVMINF->airvm_set_func(actor, call, 0, 0);
     // 运行函数
     gNatVMINF->airvm_run(actor);
     // 释放执行器

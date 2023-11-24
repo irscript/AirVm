@@ -31,7 +31,7 @@ int main()
     // 分配执行器
     airvm_actor_t actor = airvm_alloc_actor();
     // 设置运行函数
-    airvm_set_func(actor, main);
+    airvm_set_func(actor, main,0,0);
     // 运行函数
     airvm_run(actor);
     // 释放执行器

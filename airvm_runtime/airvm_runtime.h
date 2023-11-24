@@ -30,7 +30,7 @@ airvm_actor_t airvm_alloc_actor();
 // 释放执行器上下文
 void airvm_free_actor(airvm_actor_t *actor);
 // 设置运行函数函数栈
-void airvm_set_func(airvm_actor_t actor, airvm_func_t func);
+int32_t airvm_set_func(airvm_actor_t actor, airvm_func_t func,uint32_t argc,uint32_t *argv);
 
 // 运行函数
 void airvm_run(airvm_actor_t actor);

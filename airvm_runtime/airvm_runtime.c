@@ -306,9 +306,23 @@ static inline void airvm_build_stack(airvm_actor_t actor, airvm_func_t func)
     }
 }
 
-void airvm_set_func(airvm_actor_t actor, airvm_func_t func)
+int32_t airvm_set_func(airvm_actor_t actor, airvm_func_t func, uint32_t argc, uint32_t *argv)
 {
+    // 构建栈
     airvm_build_stack(actor, func);
+    // 传递参数
+    if (func->arg_count != argc)
+        return -1;
+    if (argc != 0)
+    {
+        // 计算参数填充地址
+        uint32_t argshift = func->reg_count - func->arg_count;
+        uint32_t *des = &actor->stack->reg_set[argshift];
+        // 拷贝数据
+        memcpy(des, argv, argc * sizeof(uint32_t));
+    }
+
+    return 0;
 }
 
 #ifndef insresult
@@ -1154,5 +1168,6 @@ _Error_Handle:
 }
 }
 
-#undef insresult
+#undef inscallfunc
 #undef insreturn
+#undef insresult
