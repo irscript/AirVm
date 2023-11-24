@@ -126,13 +126,21 @@ void build_exe()
                 natarg.push_back(0);
                 main.func_code.call_r16_native_func(0, 2, natarg);
             }
-            // 回调测试
+
+            // 无参数回调测试
             main.func_code.get_static_func_ptr(3, 0);
             natarg.clear();
             natarg.push_back(2);
             natarg.push_back(0);
             natarg.push_back(1);
-            main.func_code.call_r4_native_func(0, 3, natarg);
+            main.func_code.call_r4_native_func(0, 3, natarg); 
+            // 带参数回调测试
+            main.func_code.get_static_func_ptr(2, 0);
+            natarg.clear();
+            natarg.push_back(2);
+            natarg.push_back(0);
+            natarg.push_back(1);
+            main.func_code.call_r4_native_func(0, 4, natarg);
         }
 
         main.func_code.return_imm16(subop_return_u16, 0);
