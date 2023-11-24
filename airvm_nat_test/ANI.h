@@ -72,6 +72,54 @@ typedef struct airvm_interface
     void (*airvm_run)(airvm_actor_t actor);
 } *airvm_interface_t;
 
+// ---------------------填充参数的辅助宏----------------------
+// 填充32位及以下的有符号整数，dst为填充地址，val为填充值
+#define ANI_PushI32(dst, val)                         \
+    do                                                \
+    {                                                 \
+        *(airvm_int32_t *)dst = (airvm_int32_t)(val); \
+        ++dst;                                        \
+    } while (0)
+
+// 填充64位的有符号整数，dst为填充地址，val为填充值
+#define ANI_PushI64(dst, val)                         \
+    do                                                \
+    {                                                 \
+        *(airvm_int64_t *)dst = (airvm_int64_t)(val); \
+        dst += 2;                                     \
+    } while (0)
+
+// 填充32位及以下的无符号整数，dst为填充地址，val为填充值
+#define ANI_PushU32(dst, val)                           \
+    do                                                  \
+    {                                                   \
+        *(airvm_uint32_t *)dst = (airvm_uint32_t)(val); \
+        ++dst;                                          \
+    } while (0)
+// 填充64位的无符号整数，dst为填充地址，val为填充值
+#define ANI_PushU64(dst, val)                           \
+    do                                                  \
+    {                                                   \
+        *(airvm_uint64_t *)dst = (airvm_uint64_t)(val); \
+        dst += 2;                                       \
+    } while (0)
+// 填充32位浮点数，dst为填充地址，val为填充值
+#define ANI_PushF32(dst, val)        \
+    do                               \
+    {                                \
+        airvm_flt32_t flt32 = val;   \
+        *(airvm_flt32_t)dst = flt32; \
+        ++dst;                       \
+    } while (0)
+// 填充64位浮点数，dst为填充地址，val为填充值
+#define ANI_PushF64(dst, val)        \
+    do                               \
+    {                                \
+        airvm_flt64_t flt64 = val;   \
+        *(airvm_flt64_t)dst = flt64; \
+        dst += 2;                    \
+    } while (0)
+
 // 每个主机插件库初始化函数
 airvm_ani_mate_t *nat_dll_init(airvm_interface_t inf, airvm_uint32_t version);
 // 每个主机插件库终结化函数
