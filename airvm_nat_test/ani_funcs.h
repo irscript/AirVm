@@ -47,4 +47,23 @@ ANI_Func(callback)
     return 0;
 }
 
+ANI_Func(callback2)
+{
+    airvm_func_t call = *(uintptr_t *)argv; // argv[0] | (((uintptr_t)argv[1]) << 32);
+    printf("ptr:0x%p\n", call);
+    // 分配执行器
+    airvm_actor_t actor = gNatVMINF->airvm_alloc_actor();
+    airvm_uint32_t arg[2];
+    airvm_uint32_t *dst = arg;
+    ANI_PushI32(dst, -1);
+    ANI_PushI32(dst, -2);
+    // 设置运行函数
+    gNatVMINF->airvm_set_func(actor, call, 2, arg);
+    // 运行函数
+    gNatVMINF->airvm_run(actor);
+    // 释放执行器
+    gNatVMINF->airvm_free_actor(&actor);
+
+    return 0;
+}
 #undef ANI_Func
