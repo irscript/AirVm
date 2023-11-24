@@ -37,11 +37,12 @@ typedef struct
 // 接口函数
 typedef struct
 {
-    airvm_ani_string_t *name;                       // 函数名称
+    airvm_ani_string_t *name; // 函数名称
+    // 函数入口
     airvm_pointer_t (*entry)(airvm_uint32_t argc,   // 参数数量
                              airvm_uint32_t argv[], // 参数数值
-                             airvm_pointer_t ret    // 异常情况返回
-    );                                              // 函数入口
+                             airvm_pointer_t ret    // 返回值地址
+    );                                              // 返回异常情况
 } airvm_ani_func_t;
 // 接口函数表
 typedef struct
