@@ -100,7 +100,25 @@ enum OPEnum
     /*子码定义*/
 
     // 内存分配
-    op_memory_subop,
+    // 没有GC引用,
+    // 内存大小寄存器使用 uintptr—t，和地址所占的空间大小一致
+    op_memory_alloc_r8,  // 分配内存：op des,size : 8-8-16
+    op_memory_free_r8,   // 释放内存：op des      : 8-8
+    op_memory_alloc_r16, // 分配内存：op des,size : 8-[8]-16-16
+    op_memory_free_r16,  // 释放内存：op des      : 8-[8]-16
+
+    // 有GC引用
+    op_memory_new_obj_r8,  // 分配普通对象: op des,typeserial : 8-8-32
+    op_memory_new_obj_r16, // 分配普通对象: op des,typeserial : 8-[8]-16-32
+    // cols表示数组的维度,op cols,typeserial,des,col,col2,...coln
+    op_memory_new_array_r8,  // 分配数组对象 :8-8-32-8-8-8-...-8
+    op_memory_new_array_r16, // 分配数组对象 :8-8-32-16-16-16...-16
+
+    op_memory_obj_grab_r8,  // 引用：op des : 8-8
+    op_memory_obj_grab_r16, // 引用：op des : 8-[8]-16
+
+    op_memory_obj_drop_r8,  // 释放：op des : 8-8
+    op_memory_obj_drop_r16, // 释放：op des : 8-[8]-16
 
     // 数据加载、存储: op subop,des,src,offset
     // offset代表的寄存器是uint32_t 的值
