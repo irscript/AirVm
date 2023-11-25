@@ -33,7 +33,7 @@ ANI_Func(add_i32)
 ANI_Func(callback)
 {
     airvm_func_t call = *(uintptr_t *)argv; // argv[0] | (((uintptr_t)argv[1]) << 32);
-    printf("ptr:0x%p\n", call);
+    printf("无参数回调：ptr:0x%p\n\n", call);
     // 分配执行器
     airvm_actor_t actor = gNatVMINF->airvm_alloc_actor();
 
@@ -43,14 +43,14 @@ ANI_Func(callback)
     gNatVMINF->airvm_run(actor);
     // 释放执行器
     gNatVMINF->airvm_free_actor(&actor);
-
+    printf("回调结束\n\n" );
     return 0;
 }
 
 ANI_Func(callback2)
 {
     airvm_func_t call = *(uintptr_t *)argv; // argv[0] | (((uintptr_t)argv[1]) << 32);
-    printf("ptr:0x%p\n", call);
+    printf("带参数回调：ptr:0x%p\n\n", call);
     // 分配执行器
     airvm_actor_t actor = gNatVMINF->airvm_alloc_actor();
     airvm_uint32_t arg[2];
@@ -63,7 +63,7 @@ ANI_Func(callback2)
     gNatVMINF->airvm_run(actor);
     // 释放执行器
     gNatVMINF->airvm_free_actor(&actor);
-
+    printf("回调结束\n\n" );
     return 0;
 }
 #undef ANI_Func
