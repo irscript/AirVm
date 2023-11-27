@@ -524,6 +524,79 @@ struct Emiter
         code.emiter2(off);
         code.emiter2(src);
     }
+    // 立即数偏移加载
+    inline void load_r4_imm8(uint8_t subop, uint8_t des, uint8_t src, uint8_t imm8)
+    {
+        uint16_t ins = (op_ldst_r4_imm8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = ((des & 0xF) << 12) | ((src & 0xF) << 8) | (imm8 & 0xFF);
+        code.emiter2(ins);
+    }
+    // 立即数偏移存储
+    inline void store_r4_imm8(uint8_t subop, uint8_t des, uint8_t imm8, uint8_t src)
+    {
+        uint16_t ins = (op_ldst_r4_imm8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = ((des & 0xF) << 12) | ((src & 0xF) << 8) | (imm8 & 0xFF);
+        code.emiter2(ins);
+    }
+
+    // 立即数偏移加载
+    inline void load_r8_imm16(uint8_t subop, uint8_t des, uint8_t src, uint16_t imm16)
+    {
+        uint16_t ins = (op_ldst_r8_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | src;
+        code.emiter2(ins);
+        code.emiter2(imm16);
+    }
+    // 立即数偏移存储
+    inline void store_r8_imm16(uint8_t subop, uint8_t des, uint16_t imm16, uint8_t src)
+    {
+        uint16_t ins = (op_ldst_r8_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | src;
+        code.emiter2(ins);
+        code.emiter2(imm16);
+    }
+
+    // 立即数偏移加载
+    inline void load_r16_imm16(uint8_t subop, uint16_t des, uint16_t src, uint16_t imm16)
+    {
+        uint16_t ins = (op_ldst_r16_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+        code.emiter2(imm16);
+    }
+    // 立即数偏移存储
+    inline void store_r16_imm16(uint8_t subop, uint16_t des, uint16_t imm16, uint16_t src)
+    {
+        uint16_t ins = (op_ldst_r16_imm16_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+        code.emiter2(imm16);
+    }
+
+    // 立即数偏移加载
+    inline void load_r16_imm32(uint8_t subop, uint16_t des, uint16_t src, uint32_t imm32)
+    {
+        uint16_t ins = (op_ldst_r16_imm32_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+        code.emiter4(imm32);
+    }
+    // 立即数偏移存储
+    inline void store_r16_imm32(uint8_t subop, uint16_t des, uint32_t imm32, uint16_t src)
+    {
+        uint16_t ins = (op_ldst_r16_imm32_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+        code.emiter4(imm32);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__
