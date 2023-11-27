@@ -107,6 +107,27 @@ enum OPEnum
     op_memory_alloc_r16, // 分配内存：op des,size : 8-[8]-16-16
     op_memory_free_r16,  // 释放内存：op des      : 8-[8]-16
 
+    // 无偏移
+    // 数据加载、存储: op subop,des,src
+    op_ldst_r8_subop,  // 8-8-8-8
+    op_ldst_r16_subop, // 8-8-16-16
+
+    // 偏移值在寄存器中
+    // 数据加载: op subop,des,src,offset
+    // 数据存储: op subop,des,offset,src
+    // offset代表的寄存器是 uintptr_t 的值
+    op_ldst_r4_reg_subop,  // 8-8-8-4-4
+    op_ldst_r8_reg_subop,  // 8-8-16-8-8
+    op_ldst_r16_reg_subop, // 8-8-16-16-16
+
+    // 偏移值在立即数中
+    // 数据加载、存储: op subop,des,src,offset
+    // offset代表的立即数是无符号的值
+    op_ldst_r4_imm8_subop,   // 8-8-4-4-8, imm8
+    op_ldst_r8_imm16_subop,  // 8-8-8-8-16, imm16
+    op_ldst_r16_imm16_subop, // 8-8-16-16-16,imm16
+    op_ldst_r16_imm32_subop, // 8-8-16-16-32,imm32
+
     // 有GC引用
     op_memory_new_obj_r8,  // 分配普通对象: op des,typeserial : 8-8-32
     op_memory_new_obj_r16, // 分配普通对象: op des,typeserial : 8-[8]-16-32
@@ -119,25 +140,6 @@ enum OPEnum
 
     op_memory_obj_drop_r8,  // 释放：op des : 8-8
     op_memory_obj_drop_r16, // 释放：op des : 8-[8]-16
-
-    // 无偏移
-    // 数据加载、存储: op subop,des,src
-    op_ldst_r8_subop,  // 8-8-8-8
-    op_ldst_r16_subop, // 8-8-16-16
-
-    // 偏移值在寄存器中
-    // 数据加载、存储: op subop,des,src,offset
-    // offset代表的寄存器是 uintptr_t 的值
-    op_ldst_r4_off_subop,  // 8-8-8-4-4
-    op_ldst_r8_off_subop,  // 8-8-16-8-8
-    op_ldst_r16_off_subop, // 8-8-16-16-16
-
-    // 偏移值在立即数中
-    // 数据加载、存储: op subop,des,src,offset
-    // offset代表的寄存器是uint32_t 的值
-    op_ldst_r4_imm_subop,  // 8-8-4-4-8, imm8
-    op_ldst_r8_imm_subop,  // 8-8-8-8-16, imm16
-    op_ldst_r16_imm_subop, // 8-8-16-16-16,imm16
 };
 
 // 子码定义

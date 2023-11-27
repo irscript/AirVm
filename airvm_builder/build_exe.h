@@ -152,18 +152,126 @@ void build_exe()
             main.func_code.alloc_r16(2, 0);
             main.func_code.free_r16(2);
         }
-        */
 
         // 内存数据加载
         {
             main.func_code.const_r8_imm8(subop_const_w64_r8_u8, 0, 64);
             main.func_code.alloc_r8(2, 0);
 
-            main.func_code.store_r8(subop_store_w32_i8, 2, 0);
-            main.func_code.load_r8(subop_load_w32_i8, 4, 2);
+            main.func_code.store_r16(subop_store_w32_i8, 2, 0);
+            main.func_code.load_r16(subop_load_w32_i8, 4, 2);
 
-            main.func_code.store_r8(subop_store_w32_i16, 2, 0);
-            main.func_code.load_r8(subop_load_w32_i16, 4, 2);
+            main.func_code.store_r16(subop_store_w32_u8, 2, 0);
+            main.func_code.load_r16(subop_load_w32_u8, 4, 2);
+
+            main.func_code.store_r16(subop_store_w32_i16, 2, 0);
+            main.func_code.load_r16(subop_load_w32_i16, 4, 2);
+
+            main.func_code.store_r16(subop_store_w32_u16, 2, 0);
+            main.func_code.load_r16(subop_load_w32_u16, 4, 2);
+
+            main.func_code.store_r16(subop_store_w32_i32, 2, 0);
+            main.func_code.load_r16(subop_load_w32_i32, 4, 2);
+
+            main.func_code.store_r16(subop_store_w32_u32, 2, 0);
+            main.func_code.load_r16(subop_load_w32_u32, 4, 2);
+
+            float flt32 = 3.14159;
+            main.func_code.const_r8_imm32(op_const_w32_r8_f32, 7, *(uint32_t *)&flt32);
+            main.func_code.store_r16(subop_store_w32_f32, 2, 7);
+            main.func_code.load_r16(subop_load_w32_f32, 7, 2);
+
+            main.func_code.const_r8_imm8(subop_const_w64_r8_i8, 0, -64);
+            main.func_code.store_r16(subop_store_w64_i8, 2, 0);
+            main.func_code.load_r16(subop_load_w64_i8, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_u8, 2, 0);
+            main.func_code.load_r16(subop_load_w64_u8, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_i16, 2, 0);
+            main.func_code.load_r16(subop_load_w64_i16, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_u16, 2, 0);
+            main.func_code.load_r16(subop_load_w64_u16, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_i32, 2, 0);
+            main.func_code.load_r16(subop_load_w64_i32, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_u32, 2, 0);
+            main.func_code.load_r16(subop_load_w64_u32, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_i64, 2, 0);
+            main.func_code.load_r16(subop_load_w64_i64, 4, 2);
+
+            main.func_code.store_r16(subop_store_w64_u64, 2, 0);
+            main.func_code.load_r16(subop_load_w64_u64, 4, 2);
+
+            double flt64 = 3.14159;
+            main.func_code.const_r8_imm64(op_const_w64_r8_f64, 7, *(uint64_t *)&flt64);
+            main.func_code.store_r16(subop_store_w64_f64, 2, 7);
+            main.func_code.load_r16(subop_load_w64_f64, 7, 2);
+
+            main.func_code.store_r16(subop_store_ptr, 2, 2);
+            main.func_code.load_r16(subop_load_ptr, 7, 2);
+
+            main.func_code.free_r8(2);
+        }
+        */
+        // 内存数据加载
+        {
+            main.func_code.const_r8_imm8(subop_const_w64_r8_u8, 0, 64);
+            main.func_code.const_r4_imm4(op_const_w64_r4_i4, 2, 0);
+            main.func_code.alloc_r8(4, 0);
+
+            main.func_code.store_r16_reg(subop_store_w32_i8, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w32_i8, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w32_u8, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w32_u8, 6, 4, 2);
+
+            main.func_code.store_r16_reg(subop_store_w32_i16, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w32_i16, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w32_u16, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w32_u16, 6, 4, 2);
+
+            main.func_code.store_r16_reg(subop_store_w32_i32, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w32_i32, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w32_u32, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w32_u32, 6, 4, 2);
+
+            float flt32 = 3.14159;
+            main.func_code.const_r8_imm32(op_const_w32_r8_f32, 7, *(uint32_t *)&flt32);
+            main.func_code.store_r16_reg(subop_store_w32_f32, 4, 2, 7);
+            main.func_code.load_r16_reg(subop_load_w32_f32, 7, 4, 2);
+
+            main.func_code.const_r8_imm8(subop_const_w64_r8_i8, 0, -64);
+
+            main.func_code.store_r16_reg(subop_store_w64_i8, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_i8, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w64_u8, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_u8, 6, 4, 2);
+
+            main.func_code.store_r16_reg(subop_store_w64_i16, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_i16, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w64_u16, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_u16, 6, 4, 2);
+
+            main.func_code.store_r16_reg(subop_store_w64_i32, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_i32, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w64_u32, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_u32, 6, 4, 2);
+
+            main.func_code.store_r16_reg(subop_store_w64_i64, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_i64, 6, 4, 2);
+            main.func_code.store_r16_reg(subop_store_w64_u64, 4, 2, 0);
+            main.func_code.load_r16_reg(subop_load_w64_u64, 6, 4, 2);
+
+            double flt64 = 3.14159;
+            main.func_code.const_r8_imm64(op_const_w64_r8_f64, 7, *(uint64_t *)&flt64);
+            main.func_code.store_r16_reg(subop_store_w64_f64, 4, 2, 7);
+            main.func_code.load_r16_reg(subop_load_w64_f64, 7, 4, 2);
+
+            main.func_code.store_r16_reg(subop_store_ptr, 4, 2, 4);
+            main.func_code.load_r16_reg(subop_load_ptr, 7, 4, 2);
 
             main.func_code.free_r8(2);
         }

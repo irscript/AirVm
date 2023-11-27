@@ -457,7 +457,7 @@ struct Emiter
     // 无偏移加载
     inline void load_r16(uint8_t subop, uint16_t des, uint16_t src)
     {
-        uint16_t ins = (op_ldst_r8_subop << 8) | subop;
+        uint16_t ins = (op_ldst_r16_subop << 8) | subop;
         code.emiter2(ins);
         code.emiter2(des);
         code.emiter2(src);
@@ -465,9 +465,63 @@ struct Emiter
     // 无偏移存储
     inline void store_r16(uint8_t subop, uint16_t des, uint16_t src)
     {
-        uint16_t ins = (op_ldst_r8_subop << 8) | subop;
+        uint16_t ins = (op_ldst_r16_subop << 8) | subop;
         code.emiter2(ins);
         code.emiter2(des);
+        code.emiter2(src);
+    }
+
+    // 寄存器偏移加载
+    inline void load_r4_reg(uint8_t subop, uint8_t des, uint8_t src, uint8_t off)
+    {
+        uint16_t ins = (op_ldst_r4_reg_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | ((src & 0xf) << 4) | (off & 0xf);
+        code.emiter2(ins);
+    }
+    // 寄存器偏移存储
+    inline void store_r4_reg(uint8_t subop, uint8_t des, uint8_t off, uint8_t src)
+    {
+        uint16_t ins = (op_ldst_r4_reg_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | ((off & 0xf) << 4) | (src & 0xf);
+        code.emiter2(ins);
+    }
+
+    // 寄存器偏移加载
+    inline void load_r8_reg(uint8_t subop, uint16_t des, uint8_t src, uint8_t off)
+    {
+        uint16_t ins = (op_ldst_r8_reg_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        ins = (src << 8) | off;
+        code.emiter2(ins);
+    }
+    // 寄存器偏移存储
+    inline void store_r8_reg(uint8_t subop, uint16_t des, uint8_t off, uint8_t src)
+    {
+        uint16_t ins = (op_ldst_r8_reg_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        ins = (off << 8) | src;
+        code.emiter2(ins);
+    }
+    // 寄存器偏移加载
+    inline void load_r16_reg(uint8_t subop, uint16_t des, uint16_t src, uint16_t off)
+    {
+        uint16_t ins = (op_ldst_r16_reg_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+        code.emiter2(off);
+    }
+    // 寄存器偏移存储
+    inline void store_r16_reg(uint8_t subop, uint16_t des, uint16_t off, uint16_t src)
+    {
+        uint16_t ins = (op_ldst_r16_reg_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(off);
         code.emiter2(src);
     }
 };
