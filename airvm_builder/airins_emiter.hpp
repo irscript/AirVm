@@ -413,6 +413,63 @@ struct Emiter
         code.emiter4(funcserial);
         code.emiter2(des);
     }
+    // 分配内存：op des,size : 8-8-16
+    inline void alloc_r8(uint8_t desreg, uint16_t sizereg)
+    {
+        uint16_t ins = (op_memory_alloc_r8 << 8) | desreg;
+        code.emiter2(ins);
+        code.emiter2(sizereg);
+    } // 释放内存：op des      : 8-8
+    inline void free_r8(uint8_t desreg)
+    {
+        uint16_t ins = (op_memory_free_r8 << 8) | desreg;
+        code.emiter2(ins);
+    } // 分配内存：op des,size : 8-[8]-16-16
+    inline void alloc_r16(uint16_t desreg, uint16_t sizereg)
+    {
+        uint16_t ins = (op_memory_alloc_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(desreg);
+        code.emiter2(sizereg);
+    } // 释放内存：op des      : 8-[8]-16
+    inline void free_r16(uint16_t desreg)
+    {
+        uint16_t ins = (op_memory_free_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(desreg);
+    }
+    // 无偏移加载
+    inline void load_r8(uint8_t subop, uint8_t des, uint8_t src)
+    {
+        uint16_t ins = (op_ldst_r8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | src;
+        code.emiter2(ins);
+    }
+    // 无偏移存储
+    inline void store_r8(uint8_t subop, uint8_t des, uint8_t src)
+    {
+        uint16_t ins = (op_ldst_r8_subop << 8) | subop;
+        code.emiter2(ins);
+        ins = (des << 8) | src;
+        code.emiter2(ins);
+    }
+    // 无偏移加载
+    inline void load_r16(uint8_t subop, uint16_t des, uint16_t src)
+    {
+        uint16_t ins = (op_ldst_r8_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+    }
+    // 无偏移存储
+    inline void store_r16(uint8_t subop, uint16_t des, uint16_t src)
+    {
+        uint16_t ins = (op_ldst_r8_subop << 8) | subop;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__

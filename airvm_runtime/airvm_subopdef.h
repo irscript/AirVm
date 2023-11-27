@@ -488,12 +488,7 @@ enum SubOPEnum
     subop_call_r8_member_func_ptr,  // 8-8-8-8,8-8-8-...-8
     subop_call_r16_member_func_ptr, // 8-8-16-16,16-16-16-...-16
 
-   
-
     // -------------------------------数据加载、存储子码-----------------------------
-    // op_ldst_r4_subop  ： 8-8-4-4-8
-    // op_ldst_r8_subop  ： 8-8-8-8-16
-    // op_ldst_r16_subop ： 8-8-16-16-16
     subop_load_w32_i8 = 0,
     subop_load_w32_u8,
     subop_load_w32_i16,
@@ -513,7 +508,7 @@ enum SubOPEnum
     subop_load_w64_f64,
 
     subop_load_ptr,
-
+    // 故意冗余，为带有源数据的宽度信息
     subop_store_w32_i8,
     subop_store_w32_u8,
     subop_store_w32_i16,
@@ -534,50 +529,6 @@ enum SubOPEnum
 
     subop_store_ptr,
 
-    // 偏移量为立即数
-    // op_ldst_r4_subop  ： 8-8-4-4-uimm8
-    // op_ldst_r8_subop  ： 8-8-8-8-uimm16
-    // op_ldst_r16_subop ： 8-8-16-16-uimm16
-
-    subop_load_imm_w32_i8,
-    subop_load_imm_w32_u8,
-    subop_load_imm_w32_i16,
-    subop_load_imm_w32_u16,
-    subop_load_imm_w32_i32,
-    subop_load_imm_w32_u32,
-    subop_load_imm_w32_f32,
-
-    subop_load_imm_w64_i8,
-    subop_load_imm_w64_u8,
-    subop_load_imm_w64_i16,
-    subop_load_imm_w64_u16,
-    subop_load_imm_w64_i32,
-    subop_load_imm_w64_u32,
-    subop_load_imm_w64_i64,
-    subop_load_imm_w64_u64,
-    subop_load_imm_w64_f64,
-
-    subop_load_imm_ptr,
-
-    subop_store_imm_w32_i8,
-    subop_store_imm_w32_u8,
-    subop_store_imm_w32_i16,
-    subop_store_imm_w32_u16,
-    subop_store_imm_w32_i32,
-    subop_store_imm_w32_u32,
-    subop_store_imm_w32_f32,
-
-    subop_store_imm_w64_i8,
-    subop_store_imm_w64_u8,
-    subop_store_imm_w64_i16,
-    subop_store_imm_w64_u16,
-    subop_store_imm_w64_i32,
-    subop_store_imm_w64_u32,
-    subop_store_imm_w64_i64,
-    subop_store_imm_w64_u64,
-    subop_store_imm_w64_f64,
-
-    subop_store_imm_ptr,
 };
 
 #endif // __AIRVM_SUBOPDEF_INC__

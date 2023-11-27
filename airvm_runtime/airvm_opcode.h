@@ -120,12 +120,24 @@ enum OPEnum
     op_memory_obj_drop_r8,  // 释放：op des : 8-8
     op_memory_obj_drop_r16, // 释放：op des : 8-[8]-16
 
+    // 无偏移
+    // 数据加载、存储: op subop,des,src
+    op_ldst_r8_subop,  // 8-8-8-8
+    op_ldst_r16_subop, // 8-8-16-16
+
+    // 偏移值在寄存器中
+    // 数据加载、存储: op subop,des,src,offset
+    // offset代表的寄存器是 uintptr_t 的值
+    op_ldst_r4_off_subop,  // 8-8-8-4-4
+    op_ldst_r8_off_subop,  // 8-8-16-8-8
+    op_ldst_r16_off_subop, // 8-8-16-16-16
+
+    // 偏移值在立即数中
     // 数据加载、存储: op subop,des,src,offset
     // offset代表的寄存器是uint32_t 的值
-    op_ldst_r4_subop,  // 8-8-4-4-8, imm8
-    op_ldst_r8_subop,  // 8-8-8-8-16, imm16
-    op_ldst_r16_subop, // 8-8-16-16-16,imm16
-
+    op_ldst_r4_imm_subop,  // 8-8-4-4-8, imm8
+    op_ldst_r8_imm_subop,  // 8-8-8-8-16, imm16
+    op_ldst_r16_imm_subop, // 8-8-16-16-16,imm16
 };
 
 // 子码定义
