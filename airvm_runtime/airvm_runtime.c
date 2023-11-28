@@ -73,7 +73,29 @@ airvm_interface_t gVMINF = {
 uintptr_t airvm_init(const airvm_config *config)
 {
     // 加载文件
-    uintptr_t content = airvm_load_file(config->mainfile);
+    uintptr_t content = 0;
+    if (config->isMemfile != 0)
+    {
+        const char *path = config->filename;
+        // 分配文件信息内存
+        uintptr_t nlen = strlen(path);
+        uintptr_t size = sizeof(bcfmt_file) + nlen + 1;
+        bcfmt_file_t file = malloc(size);
+        memset(file, 0, size);
+        // 文件名称拷贝
+        file->filename.len = nlen;
+        memcpy_s((char *)file->filename.str, nlen, path, nlen);
+
+        file->address = config->memfile;
+        file->size = config->memsize;
+
+        // 记录句柄
+        gVMFilev[gVMFiles] = file;
+        ++gVMFiles;
+        content = (uintptr_t)file;
+    }
+    else
+        content = airvm_load_file(config->filename);
     // 分析文件
     if (airvm_parse_file(content) == 0)
     {
@@ -533,14 +555,14 @@ void airvm_run(airvm_actor_t actor)
 #include "inline/airvm_ldst_r16_imm32.inl"
 
             // 有GC引用
-       /* case op_memory_new_obj_r8:
-        {
-            uint32_t subop = ins & 0x00FF;
-            uint32_t des = insarr[*pc + 1];
-            uint32_t src = insarr[*pc + 2];
-            uintptr_t offset = *(uint32_t *)&insarr[*pc + 3];
-        }
-        break;*/
+            /* case op_memory_new_obj_r8:
+             {
+                 uint32_t subop = ins & 0x00FF;
+                 uint32_t des = insarr[*pc + 1];
+                 uint32_t src = insarr[*pc + 2];
+                 uintptr_t offset = *(uint32_t *)&insarr[*pc + 3];
+             }
+             break;*/
 
         // op 默认处理
         default:

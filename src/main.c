@@ -22,7 +22,10 @@ int main()
     // freopen("vm_log.txt","w+",stdout);
 
     airvm_config cfg;
-    cfg.mainfile = "call_test.ave";
+    cfg.isMemfile = 0;
+    cfg.memfile = 0;
+    cfg.memsize = 0;
+    cfg.filename = "call_test.ave";
 
     uintptr_t content = airvm_init(&cfg);
 
@@ -31,7 +34,7 @@ int main()
     // 分配执行器
     airvm_actor_t actor = airvm_alloc_actor();
     // 设置运行函数
-    airvm_set_func(actor, main,0,0);
+    airvm_set_func(actor, main, 0, 0);
     // 运行函数
     airvm_run(actor);
     // 释放执行器

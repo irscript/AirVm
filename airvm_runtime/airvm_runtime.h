@@ -8,7 +8,10 @@ typedef struct airvm_function *airvm_func_t;  // 虚拟机执行的函数
 
 typedef struct
 {
-    const char *mainfile; // 可执行文件格式
+    int8_t isMemfile;     // 是否是内存文件
+    uintptr_t memfile;    // 可执行文件的地址指针
+    uintptr_t memsize;   // 内存文件大小
+    const char *filename; // 可执行文件的名称
 } airvm_config;
 
 // 虚拟机环境初始化
@@ -30,7 +33,7 @@ airvm_actor_t airvm_alloc_actor();
 // 释放执行器上下文
 void airvm_free_actor(airvm_actor_t *actor);
 // 设置运行函数函数栈
-int32_t airvm_set_func(airvm_actor_t actor, airvm_func_t func,uint32_t argc,uint32_t *argv);
+int32_t airvm_set_func(airvm_actor_t actor, airvm_func_t func, uint32_t argc, uint32_t *argv);
 
 // 运行函数
 void airvm_run(airvm_actor_t actor);
