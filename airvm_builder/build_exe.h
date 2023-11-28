@@ -283,10 +283,10 @@ void build_exe()
             main.func_code.const_r4_imm4(op_const_w64_r4_i4, 2, 0);
             main.func_code.alloc_r8(4, 0);
 
-            main.func_code.store_r16_imm32(subop_store_w32_i8, 4, 0, 0);
-            main.func_code.load_r16_imm32(subop_load_w32_i8, 6, 4, 0);
-            main.func_code.store_r16_imm32(subop_store_w32_u8, 4, 0, 0);
-            main.func_code.load_r16_imm32(subop_load_w32_u8, 6, 4, 0);
+            main.func_code.store_r16_imm32(subop_store_w32_i8, 4, 2, 0);
+            main.func_code.load_r16_imm32(subop_load_w32_i8, 6, 4, 2);
+            main.func_code.store_r16_imm32(subop_store_w32_u8, 4, 2, 0);
+            main.func_code.load_r16_imm32(subop_load_w32_u8, 6, 4, 2);
 
             main.func_code.store_r16_imm32(subop_store_w32_i16, 4, 0, 0);
             main.func_code.load_r16_imm32(subop_load_w32_i16, 6, 4, 0);

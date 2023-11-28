@@ -191,7 +191,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int8_t *)(address + offset) = *(int8_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_i8  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int8_t *)(address + offset));
+                  *pc, des, src, offset, *(int8_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -201,7 +201,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint8_t *)(address + offset) = *(uint8_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_u8  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint8_t *)(address + offset));
+                  *pc, des, src, offset, *(uint8_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -211,7 +211,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int16_t *)(address + offset) = *(int16_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_i16  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int16_t *)(address + offset));
+                  *pc, des, src, offset, *(int16_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -221,7 +221,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint16_t *)(address + offset) = *(uint16_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_u16  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint16_t *)(address + offset));
+                  *pc, des, src, offset, *(uint16_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -231,7 +231,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int32_t *)(address + offset) = *(int32_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_i32  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int32_t *)(address + offset));
+                  *pc, des, src, offset, *(int32_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -241,7 +241,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint32_t *)(address + offset) = *(uint32_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_u32  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint32_t *)(address + offset));
+                  *pc, des, src, offset, *(uint32_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -251,7 +251,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(flt32_t *)(address + offset) = *(flt32_t *)&reg[src];
         insresult("%4X: store_w32_r4_imm8_f32  \tr%d,\tr%d,\t%llu  \tresult: %f\n",
-                  *pc, des, offset, src, *(flt32_t *)(address + offset));
+                  *pc, des, src, offset, *(flt32_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -262,7 +262,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int8_t *)(address + offset) = *(int8_t *)&reg[src];
         insresult("%4X: store_w64_r4_imm8_i8  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int8_t *)(address + offset));
+                  *pc, des, src, offset, *(int8_t *)(address + offset));
         *pc += 2;
         continue;
     }
@@ -272,7 +272,7 @@ case op_ldst_r4_imm8_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint8_t *)(address + offset) = *(uint8_t *)&reg[src];
         insresult("%4X: store_w64_r4_imm8_u8  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint8_t *)(address + offset));
+                  *pc, des, src, offset, *(uint8_t *)(address + offset));
         *pc += 2;
         continue;
     }

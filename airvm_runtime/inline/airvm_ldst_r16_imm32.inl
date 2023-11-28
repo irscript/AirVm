@@ -13,6 +13,7 @@ case op_ldst_r16_imm32_subop:
     {
         uintptr_t address = *(uintptr_t *)&reg[src];
         *(int32_t *)&reg[des] = (int32_t) * (int8_t *)(address + offset);
+
         insresult("%4X: load_w32_r16_imm32_i8  \tr%d,\tr%d,\t%llu \t result: %d\n",
                   *pc, des, src, offset, *(int32_t *)&reg[des]);
         *pc += 5;
@@ -188,9 +189,9 @@ case op_ldst_r16_imm32_subop:
     case subop_store_w32_i8:
     {
         uintptr_t address = *(uintptr_t *)&reg[des];
-        *(int8_t *)(address + offset) = *(int8_t *)&reg[src];
+        *(int8_t *)(address + offset) = (int8_t)reg[src];
         insresult("%4X: store_w32_r16_imm32_i8  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int8_t *)(address + offset));
+                  *pc, des, src, offset, *(int8_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -200,7 +201,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint8_t *)(address + offset) = *(uint8_t *)&reg[src];
         insresult("%4X: store_w32_r16_imm32_u8  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint8_t *)(address + offset));
+                  *pc, des, src, offset, *(uint8_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -210,7 +211,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int16_t *)(address + offset) = *(int16_t *)&reg[src];
         insresult("%4X: store_w32_r16_imm32_i16  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int16_t *)(address + offset));
+                  *pc, des, src, offset, *(int16_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -220,7 +221,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint16_t *)(address + offset) = *(uint16_t *)&reg[src];
         insresult("%4X: store_w32_r16_imm32_u16  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint16_t *)(address + offset));
+                  *pc, des, src, offset, *(uint16_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -230,7 +231,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int32_t *)(address + offset) = *(int32_t *)&reg[src];
         insresult("%4X: store_w32_r16_imm32_i32  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int32_t *)(address + offset));
+                  *pc, des, src, offset, *(int32_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -240,7 +241,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint32_t *)(address + offset) = *(uint32_t *)&reg[src];
         insresult("%4X: store_w32_r16_imm32_u32  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint32_t *)(address + offset));
+                  *pc, des, src, offset, *(uint32_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -250,7 +251,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(flt32_t *)(address + offset) = *(flt32_t *)&reg[src];
         insresult("%4X: store_w32_r16_imm32_f32  \tr%d,\tr%d,\t%llu  \tresult: %f\n",
-                  *pc, des, offset, src, *(flt32_t *)(address + offset));
+                  *pc, des, src, offset, *(flt32_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -261,7 +262,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(int8_t *)(address + offset) = *(int8_t *)&reg[src];
         insresult("%4X: store_w64_r16_imm32_i8  \tr%d,\tr%d,\t%llu  \tresult: %d\n",
-                  *pc, des, offset, src, *(int8_t *)(address + offset));
+                  *pc, des, src, offset, *(int8_t *)(address + offset));
         *pc += 5;
         continue;
     }
@@ -271,7 +272,7 @@ case op_ldst_r16_imm32_subop:
         uintptr_t address = *(uintptr_t *)&reg[des];
         *(uint8_t *)(address + offset) = *(uint8_t *)&reg[src];
         insresult("%4X: store_w64_r16_imm32_u8  \tr%d,\tr%d,\t%llu  \tresult: %u\n",
-                  *pc, des, offset, src, *(uint8_t *)(address + offset));
+                  *pc, des, src, offset, *(uint8_t *)(address + offset));
         *pc += 5;
         continue;
     }
