@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <vector>
 
+using flt32_t = float;
+using flt64_t = double;
+
 // 小端序列
 struct airvm_code_buffer_t
 {

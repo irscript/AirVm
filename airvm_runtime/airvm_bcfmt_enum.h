@@ -31,6 +31,16 @@ enum airvm_bcfmt_enum
     airvm_bcfmt_segtab_item_kind_host_dll = 1u << 8, // 主机库表
     airvm_bcfmt_segtab_item_kind_plug_in = 1u << 9,  // 插件库表
 
+    // 类型数据标记值
+    airvm_bcfmt_type_data_init = 1u << 0,      // 标记该类型数据已经初始化
+    airvm_bcfmt_type_builtin = 1u << 1,        // 基本（内建）类型
+    airvm_bcfmt_type_enum = 1u << 2,           // 枚举类型
+    airvm_bcfmt_type_struct = 1u << 3,         // 结构体类型
+    airvm_bcfmt_type_entrust_func = 1u << 4,   // 静态函数委托类型
+    airvm_bcfmt_type_entrust_object = 1u << 5, // 成员函数委托类型
+    airvm_bcfmt_type_interface = 1u << 6,      // 接口类型
+    airvm_bcfmt_type_class = 1u << 7,          // 类类型
+
     // 函数位标记值
     airvm_bcfmt_func_static = 1u << 0,    // 静态函数
     airvm_bcfmt_func_member = 1u << 1,    // 成员函数
@@ -40,7 +50,7 @@ enum airvm_bcfmt_enum
     airvm_bcfmt_func_protected = 1u << 5, // 受保护的函数
     airvm_bcfmt_func_private = 1u << 6,   // 私有的函数
 
-    airvm_bcfmt_func_no_data = 1u << 30,  // 函数没有背景数据
+    airvm_bcfmt_func_no_data = 1u << 30,   // 函数没有背景数据
     airvm_bcfmt_func_data_init = 1u << 31, // 函数背景数据已加载
 
 };

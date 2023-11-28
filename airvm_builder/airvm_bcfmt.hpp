@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -52,7 +53,9 @@ struct bcfmt_strsarea_t
     // 插入返回编号
     uint32_t addItem(const std::string &str)
     {
-        auto res = items.insert({str, items.size()});
+        auto count = items.size();
+        std::string str2 = str;
+        auto res = items.insert(std::pair{str2, count});
         return res.first->second;
     }
     // 字符串表
@@ -84,6 +87,93 @@ struct bcfmt_strsarea_t
         }
     }
 };
+
+// 类型头信息
+
+struct bcfmt_type_hd_t
+{
+    uint32_t flag;   // 类型标识
+    uint32_t name;   // 类型名称索引
+    uint32_t size;   // 类型大小
+    uint32_t align;  // 对齐大小
+    uint32_t serial; // 类型编号
+};
+// 类型基类
+struct bcfmt_type_base_t
+{
+    bcfmt_type_hd_t hd; // 类型头信息
+    virtual void build(airvm_code_buffer_t &content)
+    {
+        content.emiter4(hd.flag);
+        content.emiter4(hd.name);
+        content.emiter4(hd.size);
+        content.emiter4(hd.align);
+    }
+};
+
+// 枚举类型
+struct bcfmt_type_enum_t : public bcfmt_type_base_t
+{
+    uint32_t parent;             // 父类型索引
+    uint32_t name;               // 类型名称字符串索引
+    uint32_t count;              // 枚举成员数量
+    std::vector<uint32_t> ename; // 枚举名称字符串索引数组
+    airvm_code_buffer_t evalue;  // 枚举值数据
+
+    virtual void build(airvm_code_buffer_t &content) override
+    {
+        bcfmt_type_base_t::build(content);
+        content.emiter4(parent);
+        content.emiter4(name);
+        content.emiter4(count);
+    }
+};
+// 类型数据智能指针
+using bcfmt_type_ref = std::shared_ptr<bcfmt_type_base_t>;
+// 类型表
+struct bcfmt_typetab_t
+{
+    std::vector<uintptr_t> items; // 偏移信息
+    airvm_code_buffer_t content;  // 类型数据
+    void addItem(uintptr_t offset) { items.push_back(offset); }
+};
+// 类型内容表段
+struct bcfmt_typearea_t
+{
+    std::vector<bcfmt_type_ref> items;
+
+    // 生成一个内建类型
+    bcfmt_type_base_t &genBuildinType()
+    {
+        auto ref = std::make_shared<bcfmt_type_base_t>();
+        ref->hd.serial = (uint32_t)items.size();
+        ref->hd.flag = airvm_bcfmt_type_data_init | airvm_bcfmt_type_builtin;
+        items.push_back(ref);
+        return *ref.get();
+    }
+
+    void build(bcfmt_typetab_t &data)
+    {
+        // data.content.emiter8(items.size());
+        for (auto item : items)
+        {
+            // 记录偏移
+            data.addItem(data.content.getsize());
+            // 构建数据
+            item->build(data.content);
+            // 4 字节对齐
+            uint32_t len = data.content.getsize() % 4;
+            if (len != 0)
+            {
+                len = 4 - len;
+                for (uint32_t i = 0; i < len; ++i)
+                    data.content.emiter(0);
+            }
+        }
+    }
+    
+};
+
 // 函数表
 struct bcfmt_functab_t
 {
@@ -183,14 +273,131 @@ struct bcfmt_file_t
     bcfmt_strstab_t tabstr;
     bcfmt_strsarea_t areastr;
 
+    bcfmt_typetab_t tabtype;
+    bcfmt_typearea_t areatype;
+
     bcfmt_functab_t tabfunc;
     bcfmt_funcarea_t areafunc;
 
     bcfmt_nat_t tabnat;
 
-    bcfmt_file_t()
+    /*  bcfmt_file_t()
+      {
+          memset(&header, 0, sizeof(header));
+      }*/
+
+    void buildin_type()
     {
         memset(&header, 0, sizeof(header));
+        std::string szName;
+        // 构建基本类型信息
+        auto &buildin_void = areatype.genBuildinType();
+        buildin_void.hd.align = 0;
+        buildin_void.hd.size = 0;
+        szName = "void";
+        buildin_void.hd.name = areastr.addItem(szName);
+
+        auto &buildin_bool = areatype.genBuildinType();
+        buildin_bool.hd.align = 1;
+        buildin_bool.hd.size = 1;
+        szName = "bool";
+        buildin_bool.hd.name = areastr.addItem(szName);
+
+        auto &buildin_int8 = areatype.genBuildinType();
+        buildin_int8.hd.align = 1;
+        buildin_int8.hd.size = 1;
+        szName = "int8";
+        buildin_int8.hd.name = areastr.addItem(szName);
+
+        auto &buildin_int16 = areatype.genBuildinType();
+        buildin_int16.hd.align = 2;
+        buildin_int16.hd.size = 2;
+        szName = "int16";
+        buildin_int16.hd.name = areastr.addItem(szName);
+
+        auto &buildin_int32 = areatype.genBuildinType();
+        buildin_int32.hd.align = 4;
+        buildin_int32.hd.size = 4;
+        szName = "int32";
+        buildin_int32.hd.name = areastr.addItem(szName);
+
+        auto &buildin_int64 = areatype.genBuildinType();
+        buildin_int64.hd.align = sizeof(uintptr_t);
+        buildin_int64.hd.size = 8;
+        szName = "int64";
+        buildin_int64.hd.name = areastr.addItem(szName);
+
+        auto &buildin_uint8 = areatype.genBuildinType();
+        buildin_uint8.hd.align = 1;
+        buildin_uint8.hd.size = 1;
+        szName = "uint8";
+        buildin_uint8.hd.name = areastr.addItem(szName);
+
+        auto &buildin_uint16 = areatype.genBuildinType();
+        buildin_uint16.hd.align = 2;
+        buildin_uint16.hd.size = 2;
+        szName = "uint16";
+        buildin_uint16.hd.name = areastr.addItem(szName);
+
+        auto &buildin_uint32 = areatype.genBuildinType();
+        buildin_uint32.hd.align = 4;
+        buildin_uint32.hd.size = 4;
+        szName = "uint32";
+        buildin_uint32.hd.name = areastr.addItem(szName);
+
+        auto &buildin_uint64 = areatype.genBuildinType();
+        buildin_uint64.hd.align = sizeof(uintptr_t);
+        buildin_uint64.hd.size = 8;
+        szName = "uint64";
+        buildin_uint64.hd.name = areastr.addItem(szName);
+
+        auto &buildin_sint = areatype.genBuildinType();
+        buildin_sint.hd.align = sizeof(uintptr_t);
+        buildin_sint.hd.size = sizeof(uintptr_t);
+        szName = "sint";
+        buildin_sint.hd.name = areastr.addItem(szName);
+
+        auto &buildin_uint = areatype.genBuildinType();
+        buildin_uint.hd.align = sizeof(uintptr_t);
+        buildin_uint.hd.size = sizeof(uintptr_t);
+        szName = "uint";
+        buildin_uint.hd.name = areastr.addItem(szName);
+
+        auto &buildin_flt32 = areatype.genBuildinType();
+        buildin_flt32.hd.align = 4;
+        buildin_flt32.hd.size = sizeof(flt32_t);
+        szName = "flt32";
+        buildin_flt32.hd.name = areastr.addItem(szName);
+
+        auto &buildin_flt64 = areatype.genBuildinType();
+        buildin_flt64.hd.align = sizeof(uintptr_t);
+        buildin_flt64.hd.size = sizeof(flt64_t);
+        szName = "flt64";
+        buildin_flt64.hd.name = areastr.addItem(szName);
+
+        auto &buildin_uintptr = areatype.genBuildinType();
+        buildin_uintptr.hd.align = sizeof(uintptr_t);
+        buildin_uintptr.hd.size = sizeof(uintptr_t);
+        szName = "uintptr";
+        buildin_uintptr.hd.name = areastr.addItem(szName);
+
+        auto &buildin_char = areatype.genBuildinType();
+        buildin_uintptr.hd.align = sizeof(uintptr_t);
+        buildin_uintptr.hd.size = sizeof(uintptr_t);
+        szName = "char";
+        buildin_uintptr.hd.name = areastr.addItem(szName);
+
+        auto &buildin_cstring = areatype.genBuildinType();
+        buildin_cstring.hd.align = sizeof(uintptr_t);
+        buildin_cstring.hd.size = sizeof(uintptr_t);
+        szName = "cstring";
+        buildin_cstring.hd.name = areastr.addItem(szName);
+
+        auto &buildin_string = areatype.genBuildinType();
+        buildin_string.hd.align = sizeof(uintptr_t);
+        buildin_string.hd.size = sizeof(uintptr_t);
+        szName = "string";
+        buildin_string.hd.name = areastr.addItem(szName);
     }
 
     void write_file(const std::string &path)
@@ -199,6 +406,8 @@ struct bcfmt_file_t
 
         // 计算字符串数据
         areastr.build(tabstr);
+        // 计算类型数据
+        areatype.build(tabtype);
         // 计算 dll 数据
         tabnat.build();
         // 计算函数数据
@@ -211,18 +420,25 @@ struct bcfmt_file_t
         offset += tabstr.items.size() * sizeof(uintptr_t) + sizeof(uintptr_t);
         segtab.addItem(airvm_bcfmt_segtab_item_kind_string_data, offset);
         offset += tabstr.content.buffer.size();
-        // 计算插件表
-        if (tabnat.content.buffer.empty() == false)
-        {
-            segtab.addItem(airvm_bcfmt_segtab_item_kind_host_dll, offset);
-            offset += tabnat.content.buffer.size();
-        }
+
+        // 计算类型数据
+        segtab.addItem(airvm_bcfmt_segtab_item_kind_type_table, offset);
+        offset += tabtype.items.size() * sizeof(uintptr_t) + sizeof(uintptr_t);
+        segtab.addItem(airvm_bcfmt_segtab_item_kind_type_data, offset);
+        offset += tabtype.content.buffer.size();
 
         // 计算函数表区
         segtab.addItem(airvm_bcfmt_segtab_item_kind_function_table, offset);
         offset += tabfunc.items.size() * sizeof(uintptr_t) + sizeof(uintptr_t);
         segtab.addItem(airvm_bcfmt_segtab_item_kind_function_data, offset);
         offset += tabfunc.content.buffer.size();
+
+        // 计算插件表
+        if (tabnat.content.buffer.empty() == false)
+        {
+            segtab.addItem(airvm_bcfmt_segtab_item_kind_host_dll, offset);
+            offset += tabnat.content.buffer.size();
+        }
 
         // --------------头部数据填充--------------
         airvm_code_buffer_t data;
@@ -275,8 +491,11 @@ struct bcfmt_file_t
         for (auto &item : tabstr.content.buffer)
             data.emiter(item);
 
-        // 插件库
-        for (auto &item : tabnat.content.buffer)
+        // 类型表区
+        data.emiter8(tabtype.items.size());
+        for (auto &item : tabtype.items)
+            data.emiter8(item);
+        for (auto &item : tabtype.content.buffer)
             data.emiter(item);
 
         // 函数表区
@@ -284,6 +503,10 @@ struct bcfmt_file_t
         for (auto &item : tabfunc.items)
             data.emiter8(item);
         for (auto &item : tabfunc.content.buffer)
+            data.emiter(item);
+
+        // 插件表区
+        for (auto &item : tabnat.content.buffer)
             data.emiter(item);
 
         //------------- -保存到文件------------

@@ -1,7 +1,9 @@
 #ifndef __AIRVM_BCFMT_INC__
 #define __AIRVM_BCFMT_INC__
 #include <stdint.h>
+#ifdef Airvm_Plat_Window
 #include <windows.h>
+#endif
 // 字节码文件定义
 // 文件头
 typedef struct
@@ -46,6 +48,59 @@ typedef struct
 } bcfmt_typetab_t,    // 类型表
     bcfmt_varitab_t,  // 变量表
     bcfmt_functab_t;  // 函数表
+
+// 类型数据基本头
+typedef struct
+{
+    uint32_t flag;  // 类型标识
+    uint32_t name;  // 类型名称索引
+    uint32_t size;  // 类型大小
+    uint32_t align; // 对齐大小
+} bcfmt_type_hd_t;
+
+typedef struct bcfmt_type_hd_t bcfmt_type_buildin_t; // 基本(内建)类型
+
+// 枚举类型
+typedef struct
+{
+    bcfmt_type_hd_t hd; // 类型头信息
+    uint32_t parent;    // 父类型索引
+    uint32_t name;      // 类型名称字符串索引
+    uint32_t count;     // 枚举成员数量
+    uint32_t *ename;    // 枚举名称字符串索引数组
+    uint8_t *evalue;    // 枚举值数据
+} bcfmt_type_enum_t;
+
+typedef struct
+{
+    uint32_t name;    // 名称索引
+    uint32_t type;    // 类型索引
+    uintptr_t offset; // 偏移量值
+} bcfmt_type_struct_var_item_t;
+
+// 结构体类型
+typedef struct
+{
+    bcfmt_type_hd_t hd;                    // 类型头信息
+    uint32_t parent;                       // 父类型索引
+    uint32_t name;                         // 类型名称字符串索引
+    uint32_t vcount;                       // 成员变量数量
+    uint32_t fcount;                       // 成员函数数量
+    bcfmt_type_struct_var_item_t *varinfo; // 成员变量信息
+    uintptr_t funcinfo[];                  // 成员函数信息
+} bcfmt_type_struct_t;
+
+// 接口类型
+typedef struct
+{
+    bcfmt_type_hd_t hd; // 类型头信息
+} bcfmt_type_interface_t;
+
+// 类类型
+typedef struct
+{
+    bcfmt_type_hd_t hd; // 类型头信息
+} bcfmt_type_class_t;
 
 typedef struct airvm_native *airvm_native_mate_t;
 typedef struct
@@ -147,12 +202,12 @@ typedef struct airvm_interface
     // 释放执行器上下文
     void (*airvm_free_actor)(airvm_actor_t *actor);
     // 设置运行函数函数栈
-    int32_t (*airvm_set_func)(airvm_actor_t actor, airvm_func_t func,uint32_t argc,uint32_t argv[]);
+    int32_t (*airvm_set_func)(airvm_actor_t actor, airvm_func_t func, uint32_t argc, uint32_t argv[]);
     // 运行函数
     void (*airvm_run)(airvm_actor_t actor);
 } airvm_interface_t;
 
 // 插件初始化函数，传人参数为插件版本号
-typedef airvm_native_mate_t (*airvm_native_init)(airvm_interface_t*, uint32_t);
+typedef airvm_native_mate_t (*airvm_native_init)(airvm_interface_t *, uint32_t);
 
 #endif // __AIRVM_BCFMT_INC__

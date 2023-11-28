@@ -7,6 +7,7 @@ void build_exe()
     file.header.insver = airvm_bcfmt_header_instruction_version;
     file.header.kind = airvm_bcfmt_header_file_kind_exe;
 
+    file.buildin_type();
     // 添加dll项
     {
         auto &dll = file.tabnat.genItem();

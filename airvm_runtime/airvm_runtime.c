@@ -219,13 +219,20 @@ int32_t airvm_parse_file(uintptr_t handle)
             continue;
         }
         break;
-        // 主机插件
-        case airvm_bcfmt_segtab_item_kind_host_dll:
+        // 类型信息
+        case airvm_bcfmt_segtab_item_kind_type_table:
         {
-            file->tabnat = (bcfmt_nattab_t *)(file->address + offset + file->segtab->item[i].offset);
+            file->tabtype = (bcfmt_typetab_t *)(file->address + offset + file->segtab->item[i].offset);
             continue;
         }
         break;
+        case airvm_bcfmt_segtab_item_kind_type_data:
+        {
+            file->areatype = (file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+
         // 函数信息
         case airvm_bcfmt_segtab_item_kind_function_table:
         {
@@ -236,6 +243,13 @@ int32_t airvm_parse_file(uintptr_t handle)
         case airvm_bcfmt_segtab_item_kind_function_data:
         {
             file->areafunc = (file->address + offset + file->segtab->item[i].offset);
+            continue;
+        }
+        break;
+        // 主机插件
+        case airvm_bcfmt_segtab_item_kind_host_dll:
+        {
+            file->tabnat = (bcfmt_nattab_t *)(file->address + offset + file->segtab->item[i].offset);
             continue;
         }
         break;
@@ -251,15 +265,23 @@ int32_t airvm_parse_file(uintptr_t handle)
     }
 
     // 开始分析各索引的地址
+
+    // 字符串
     for (uint32_t i = 0; i < file->tabstr->count; ++i)
     {
         file->tabstr->item[i] = (bcfmt_string_t *)(file->areastr + (uintptr_t)(file->tabstr->item[i]));
         // printf("%d:%s\n", file->tabstr->item[i]->len, file->tabstr->item[i]->str);
     }
+    // 类型
+    for (uint32_t i = 0; i < file->tabtype->count; ++i)
+    {
+        file->tabtype->item[i] = (file->areatype + (uintptr_t)(file->tabtype->item[i]));
+        // printf("%d:%s\n",file->tabstr->item[i]->len,file->tabstr->item[i]->str);
+    }
+    // 函数
     for (uint32_t i = 0; i < file->tabfunc->count; ++i)
     {
         file->tabfunc->item[i] = (file->areafunc + (uintptr_t)(file->tabfunc->item[i]));
-        // printf("%d:%s\n",file->tabstr->item[i]->len,file->tabstr->item[i]->str);
     }
     // 加载dll库
     airvm_load_dll_files(file);
@@ -451,6 +473,69 @@ static inline airvm_native_func_t *airvm_get_native_func(airvm_func_t current, u
     return 0;
 }
 
+typedef struct
+{
+    union
+    {
+        bcfmt_type_hd_t *type;              // 类型地址
+        bcfmt_type_buildin_t *buildin;      // 内建基本类型
+        bcfmt_type_enum_t *tenum;           // 枚举类型
+        bcfmt_type_struct_t *tstruct;       // 结构体类型
+        bcfmt_type_interface_t *tinterface; // 接口类型
+        bcfmt_type_class_t *tclass;         // 类类型
+    };
+
+    volatile uint32_t refcount; // 引用计数
+    union
+    {
+        uint32_t flags; // 对象标记
+        struct
+        {
+            volatile uint8_t lock; // 自旋锁定
+            uint8_t arrcols;       // 数组维度
+            uint16_t other;        // 其他待扩展
+        };
+    };
+} airvm_object_header_t;
+
+// 分配普通对象
+static inline uintptr_t airvm_new_object(airvm_func_t current, uint32_t type)
+{
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+    {
+        uintptr_t start = gVMFilev[i]->address;
+        uintptr_t end = start + gVMFilev[i]->size;
+        if (start < (uintptr_t)current && (uintptr_t)current < end)
+        {
+            if (type < gVMFilev[i]->tabtype->count)
+            {
+                // 分配类型
+                bcfmt_type_hd_t *hd = (bcfmt_type_hd_t *)gVMFilev[i]->tabtype->item[type];
+                if (hd == 0)
+                {
+                    printf("%s: Type data address is nullptr! type: %u\n",
+                           gVMFilev[i]->filename.str, type);
+                    return 0;
+                }
+
+                // if(hd->flag&airvm_bcfmt_type_builtin)
+                return &(gVMFilev[i]->tabnat->item[dll].nat->tabfun->funcs[func]);
+            }
+            else
+            {
+                printf("%s: Type number overflow  ! type: %u\n",
+                       gVMFilev[i]->filename.str, type);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+// 引用对象
+static void airvm_grab_object() {}
+// 释放对象
+static void airvm_drop_object() {}
+
 void airvm_run(airvm_actor_t actor)
 {
     airvm_funcstack_t statck = actor->stack;
@@ -555,14 +640,16 @@ void airvm_run(airvm_actor_t actor)
 #include "inline/airvm_ldst_r16_imm32.inl"
 
             // 有GC引用
-            /* case op_memory_new_obj_r8:
-             {
-                 uint32_t subop = ins & 0x00FF;
-                 uint32_t des = insarr[*pc + 1];
-                 uint32_t src = insarr[*pc + 2];
-                 uintptr_t offset = *(uint32_t *)&insarr[*pc + 3];
-             }
-             break;*/
+        case op_memory_new_obj_r8: // 分配普通对象: op des,typeserial : 8-8-32
+        {
+            uint32_t subop = ins & 0x00FF;
+            uint32_t des = insarr[*pc + 1];
+            uintptr_t type = *(uint32_t *)&insarr[*pc + 2];
+
+            *pc += 3;
+            continue;
+        }
+        break;
 
         // op 默认处理
         default:
