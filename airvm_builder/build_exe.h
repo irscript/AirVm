@@ -361,6 +361,7 @@ void build_exe()
             cols.push_back(2);
             main.func_code.new_array_r8(4, 6, cols);
             main.func_code.drop_obj_r8(4);
+
             std::vector<uint16_t> colss;
             colss.push_back(0);
             colss.push_back(2);

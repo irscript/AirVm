@@ -580,7 +580,7 @@ static inline uintptr_t airvm_new_object(airvm_func_t current, uint32_t type)
     return 0;
 }
 // 分配数组对象
-static inline airvm_object_header_t *airvm_new_array_object(airvm_func_t current, uint32_t type, uintptr_t size)
+static inline airvm_object_header_t *airvm_new_array_object(airvm_func_t current, uint32_t type, uintptr_t asize)
 {
     for (uint32_t i = 0; i < gVMFiles; ++i)
     {
@@ -599,7 +599,7 @@ static inline airvm_object_header_t *airvm_new_array_object(airvm_func_t current
                     return 0;
                 }
                 // 计算分配内存大小
-                uintptr_t size = hd->size + sizeof(airvm_object_header_t) + size;
+                uintptr_t size = sizeof(airvm_object_header_t) + asize;
                 uintptr_t blk = (uintptr_t)malloc(size);
                 if (0 == blk)
                 {
@@ -608,6 +608,7 @@ static inline airvm_object_header_t *airvm_new_array_object(airvm_func_t current
                     return 0;
                 }
                 // 初始化对象头
+                memset((void *)blk, 0, size);
                 airvm_object_header_t *objhd = (airvm_object_header_t *)blk;
                 objhd->buildin = (bcfmt_type_buildin_t *)hd; // 记录类型
                 objhd->refcount = 1;                         // 引用计数
@@ -798,6 +799,7 @@ void airvm_run(airvm_actor_t actor)
                 insresult("\tr%u\tcol:%lld\n", col, val);
                 colsize *= val;
             }
+            assert(0 != colsize);
             size += colsize * thd->size;
             // 分配数组对象
             airvm_object_header_t *arr = airvm_new_array_object(func, type, size);
@@ -814,7 +816,7 @@ void airvm_run(airvm_actor_t actor)
             // 存储对象地址
             *(uintptr_t *)&reg[des] = (uintptr_t)arr + sizeof(airvm_object_header_t);
             cols = (cols + 2) & (~1);
-            *pc += 3 + cols/2;
+            *pc += 3 + cols / 2;
             continue;
         }
         break;
@@ -836,6 +838,7 @@ void airvm_run(airvm_actor_t actor)
                 insresult("\tr%u\tcol:%lld\n", col, val);
                 colsize *= val;
             }
+            assert(0 != colsize);
             size += colsize * thd->size;
             // 分配数组对象
             airvm_object_header_t *arr = airvm_new_array_object(func, type, size);
