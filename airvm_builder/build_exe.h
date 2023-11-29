@@ -353,6 +353,19 @@ void build_exe()
             main.func_code.lock_obj_r16(0);
             main.func_code.unlock_obj_r16(0);
             main.func_code.drop_obj_r16(0);
+
+            main.func_code.const_r8_imm32(op_const_w64_r8_u32, 0, 4); // 0-1
+            main.func_code.const_r8_imm32(op_const_w64_r8_u32, 2, 4); // 2-3
+            std::vector<uint8_t> cols;
+            cols.push_back(0);
+            cols.push_back(2);
+            main.func_code.new_array_r8(4, 6, cols);
+            main.func_code.drop_obj_r8(4);
+            std::vector<uint16_t> colss;
+            colss.push_back(0);
+            colss.push_back(2);
+            main.func_code.new_array_r16(4, 7, colss);
+            main.func_code.drop_obj_r16(4);
         }
 
         main.func_code.return_imm16(subop_return_u16, 0);

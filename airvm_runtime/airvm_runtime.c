@@ -472,6 +472,39 @@ static inline airvm_native_func_t *airvm_get_native_func(airvm_func_t current, u
     }
     return 0;
 }
+// 获取类型
+static inline bcfmt_type_hd_t *airvm_get_type(airvm_func_t current, uint32_t serial)
+{
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+    {
+        uintptr_t start = gVMFilev[i]->address;
+        uintptr_t end = start + gVMFilev[i]->size;
+        if (start < (uintptr_t)current && (uintptr_t)current < end)
+        {
+            if (serial < gVMFilev[i]->tabtype->count)
+            {
+                // 分配类型
+                bcfmt_type_hd_t *hd = (bcfmt_type_hd_t *)gVMFilev[i]->tabtype->item[serial];
+                if (0 == hd)
+                {
+                    printf("%s: Type data address is nullptr! type: %u\n",
+                           gVMFilev[i]->filename.str, serial);
+                    return 0;
+                }
+                return hd;
+            }
+            else
+            {
+                printf("%s: type number overflow %u < %u!",
+                       gVMFilev[i]->filename.str,
+                       gVMFilev[i]->tabfunc->count - 1, serial);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
 // 对象头
 typedef struct
 {
@@ -547,7 +580,7 @@ static inline uintptr_t airvm_new_object(airvm_func_t current, uint32_t type)
     return 0;
 }
 // 分配数组对象
-static inline uintptr_t airvm_new_array_object(airvm_func_t current, uint32_t type)
+static inline airvm_object_header_t *airvm_new_array_object(airvm_func_t current, uint32_t type, uintptr_t size)
 {
     for (uint32_t i = 0; i < gVMFiles; ++i)
     {
@@ -566,7 +599,7 @@ static inline uintptr_t airvm_new_array_object(airvm_func_t current, uint32_t ty
                     return 0;
                 }
                 // 计算分配内存大小
-                uintptr_t size = hd->size + sizeof(airvm_object_header_t);
+                uintptr_t size = hd->size + sizeof(airvm_object_header_t) + size;
                 uintptr_t blk = (uintptr_t)malloc(size);
                 if (0 == blk)
                 {
@@ -580,7 +613,7 @@ static inline uintptr_t airvm_new_array_object(airvm_func_t current, uint32_t ty
                 objhd->refcount = 1;                         // 引用计数
                 objhd->flags = 0;                            // 其他标记
                 // 返回
-                return blk + sizeof(airvm_object_header_t);
+                return objhd;
             }
             else
             {
@@ -742,97 +775,81 @@ void airvm_run(airvm_actor_t actor)
 #include "inline/airvm_ldst_r16_imm16.inl"
 // 数据加载、存储: op subop,des,src,offset：8-8-16-16-32, imm32
 #include "inline/airvm_ldst_r16_imm32.inl"
-
-            // 有GC引用
-        case op_memory_new_obj_r8: // 分配普通对象: op des,typeserial : 8-8-32
+// 对象分配、引用/释放、锁定/解锁
+#include "inline/airvm_obj_op.inl"
+            // cols表示数组的维度,op cols,typeserial,des,col,col2,...coln
+        case op_memory_new_array_r8: // 分配数组对象 :8-8-32-8-8-8-...-8
         {
-            uint32_t des = ins & 0x00FF;
+            uint32_t cols = ins & 0x00FF;
             uint32_t type = *(uint32_t *)&insarr[*pc + 1];
-            *(uintptr_t *)&reg[des] = airvm_new_object(func, type);
-            insresult("%4X: new_obj_r8 \tr%d,\t%u\n", *pc, des, type);
-            *pc += 3;
+            uint8_t *insreg = (uint8_t *)&insarr[*pc + 3];
+            uint32_t des = *insreg;
+            ++insreg;
+            assert(0 != cols);
+            insresult("%4X: new_array_r8 \t%u,\t%u\tr%d\n", *pc, cols, type, des);
+            // 获取类型并计算数据大小
+            bcfmt_type_hd_t *thd = airvm_get_type(func, type);
+            uintptr_t size = cols * sizeof(uintptr_t); // 数组维度值存储空间
+            uintptr_t colsize = 1;
+            for (uint32_t i = 0; i < cols; ++i)
+            {
+                uint32_t col = insreg[i];
+                uintptr_t val = *(uintptr_t *)&reg[col];
+                insresult("\tr%u\tcol:%lld\n", col, val);
+                colsize *= val;
+            }
+            size += colsize * thd->size;
+            // 分配数组对象
+            airvm_object_header_t *arr = airvm_new_array_object(func, type, size);
+            arr->arrblk = 1;
+            arr->arrcols = cols;
+            // 记录对象维度值
+            uintptr_t *colsv = (uintptr_t *)((uintptr_t)arr + sizeof(airvm_object_header_t));
+            for (uint32_t i = 0; i < cols; ++i)
+            {
+                uint32_t col = insreg[i];
+                uintptr_t val = *(uintptr_t *)&reg[col];
+                colsv[i] = val;
+            }
+            // 存储对象地址
+            *(uintptr_t *)&reg[des] = (uintptr_t)arr + sizeof(airvm_object_header_t);
+            cols = (cols + 2) & (~1);
+            *pc += 3 + cols/2;
             continue;
         }
         break;
-        case op_memory_new_obj_r16: // 分配普通对象: op des,typeserial : 8-[8]-16-32
+        case op_memory_new_array_r16: // 分配数组对象 :8-8-32-16-16-16...-16
         {
-            uint32_t des = insarr[*pc + 1];
-            uint32_t type = *(uint32_t *)&insarr[*pc + 2];
-            *(uintptr_t *)&reg[des] = airvm_new_object(func, type);
-            insresult("%4X: new_obj_r16 \tr%d,\t%u\n", *pc, des, type);
-            *pc += 4;
-            continue;
-        }
-        break;
-        case op_memory_grab_obj_r8: // 对象引用: op des : 8-8
-        {
-            uint32_t des = ins & 0x00FF;
-            airvm_grab_object(*(uintptr_t *)&reg[des]);
-            insresult("%4X: grab_obj_r8 \tr%d\n", *pc, des);
-            *pc += 1;
-            continue;
-        }
-        break;
-        case op_memory_grab_obj_r16: // 对象引用: op des : 8-[8]-16
-        {
-            uint32_t des = insarr[*pc + 1];
-            airvm_grab_object(*(uintptr_t *)&reg[des]);
-            insresult("%4X: grab_obj_r16 \tr%d\n", *pc, des);
-            *pc += 2;
-            continue;
-        }
-        break;
-        case op_memory_drop_obj_r8: // 对象释放: op des : 8-8
-        {
-            uint32_t des = ins & 0x00FF;
-            airvm_drop_object((uintptr_t *)&reg[des]);
-            insresult("%4X: drop_obj_r8 \tr%d\n", *pc, des);
-            *pc += 1;
-            continue;
-        }
-        break;
-        case op_memory_drop_obj_r16: // 对象释放: op des : 8-[8]-16
-        {
-            uint32_t des = insarr[*pc + 1];
-            airvm_drop_object((uintptr_t *)&reg[des]);
-            insresult("%4X: drop_obj_r16 \tr%d\n", *pc, des);
-            *pc += 2;
-            continue;
-        }
-        break;
-        case op_memory_lock_obj_r8: // 对象锁定: op des : 8-8
-        {
-            uint32_t des = ins & 0x00FF;
-            airvm_lock_object(*(uintptr_t *)&reg[des]);
-            insresult("%4X: lock_obj_r8 \tr%d\n", *pc, des);
-            *pc += 1;
-            continue;
-        }
-        break;
-        case op_memory_lock_obj_r16: // 对象锁定: op des : 8-[8]-16
-        {
-            uint32_t des = insarr[*pc + 1];
-            airvm_lock_object(*(uintptr_t *)&reg[des]);
-            insresult("%4X: lock_obj_r16 \tr%d\n", *pc, des);
-            *pc += 2;
-            continue;
-        }
-        break;
-        case op_memory_unlock_obj_r8: // 对象解锁: op des : 8-8
-        {
-            uint32_t des = ins & 0x00FF;
-            airvm_unlock_object(*(uintptr_t *)&reg[des]);
-            insresult("%4X: unlock_obj_r8 \tr%d\n", *pc, des);
-            *pc += 1;
-            continue;
-        }
-        break;
-        case op_memory_unlock_obj_r16: // 对象解锁: op des : 8-[8]-16
-        {
-            uint32_t des = insarr[*pc + 1];
-            airvm_unlock_object(*(uintptr_t *)&reg[des]);
-            insresult("%4X: unlock_obj_r16 \tr%d\n", *pc, des);
-            *pc += 2;
+            uint32_t cols = ins & 0x00FF;
+            uint32_t type = *(uint32_t *)&insarr[*pc + 1];
+            uint32_t des = insarr[*pc + 3];
+            assert(0 != cols);
+            insresult("%4X: new_array_r16 \t%u,\t%u\tr%d\n", *pc, cols, type, des);
+            // 获取类型并计算数据大小
+            bcfmt_type_hd_t *thd = airvm_get_type(func, type);
+            uintptr_t size = cols * sizeof(uintptr_t); // 数组维度值存储空间
+            uintptr_t colsize = 1;
+            for (uint32_t i = 0; i < cols; ++i)
+            {
+                uint32_t col = insarr[*pc + 4 + i];
+                uintptr_t val = *(uintptr_t *)&reg[col];
+                insresult("\tr%u\tcol:%lld\n", col, val);
+                colsize *= val;
+            }
+            size += colsize * thd->size;
+            // 分配数组对象
+            airvm_object_header_t *arr = airvm_new_array_object(func, type, size);
+            arr->arrblk = 1;
+            arr->arrcols = cols;
+            // 记录对象维度值
+            uintptr_t *colsv = (uintptr_t *)((uintptr_t)arr + sizeof(airvm_object_header_t));
+            for (uint32_t i = 0; i < cols; ++i)
+            {
+                colsv[i] = *(uintptr_t *)&reg[insarr[*pc + 4 + i]];
+            }
+            // 存储对象地址
+            *(uintptr_t *)&reg[des] = (uintptr_t)arr + sizeof(airvm_object_header_t);
+            *pc += 4 + cols;
             continue;
         }
         break;

@@ -667,6 +667,35 @@ struct Emiter
         code.emiter2(ins);
         code.emiter2(des);
     }
+    // 数组对象分配
+    inline void new_array_r8(uint8_t des, uint32_t type, std::vector<uint8_t> &cols)
+    {
+        uint16_t col = cols.size();
+        uint16_t ins = (op_memory_new_array_r8 << 8) | col;
+        code.emiter2(ins);
+        code.emiter4(type);
+        cols.insert(cols.begin(), des);
+        // 2字节对齐
+        col = (col + 2) & (~1);
+        for (int i = 0; i < col - cols.size(); ++i)
+            cols.push_back(0);
+        for (int i = 0; i < cols.size(); i += 2)
+        {
+            ins = cols[i] << 8 | cols[i + 1];
+            code.emiter2(ins);
+        }
+    }
+    // 数组对象分配
+    inline void new_array_r16(uint16_t des, uint32_t type, std::vector<uint16_t> &cols)
+    {
+        uint16_t col = cols.size();
+        uint16_t ins = (op_memory_new_array_r8 << 8) | col;
+        code.emiter2(ins);
+        code.emiter4(type);
+        code.emiter2(des);
+        for (int i = 0; i < cols.size(); ++i)
+            code.emiter2(cols[i]);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__

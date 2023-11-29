@@ -603,7 +603,6 @@ case op_func_subop: // 8-8-16
 
     // 获取静态/成员函数地址:func funcserial,des : 8-8-32-16
     case subop_get_static_func_ptr:
-    case subop_get_member_func_ptr:
     {
         // 静态函数编号
         uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
@@ -613,6 +612,20 @@ case op_func_subop: // 8-8-16
         uint32_t des = insarr[*pc + 3];
         *(uintptr_t *)&reg[des] = (uintptr_t)call;
         insresult("%4X: get_static_func_ptr %u,\tr%d  ptr:0x%p\n", *pc, funcserial, des, call);
+        *pc += 4;
+        continue;
+    }
+    break;
+    case subop_get_member_func_ptr:
+    {
+        // 静态函数编号
+        uint32_t funcserial = (insarr[*pc + 2] << 16) | insarr[*pc + 1];
+        // 获取函数
+        airvm_func_t call = airvm_get_func(func, funcserial);
+        // 存储函数
+        uint32_t des = insarr[*pc + 3];
+        *(uintptr_t *)&reg[des] = (uintptr_t)call;
+        insresult("%4X: get_member_func_ptr %u,\tr%d  ptr:0x%p\n", *pc, funcserial, des, call);
         *pc += 4;
         continue;
     }
