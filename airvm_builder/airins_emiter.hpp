@@ -600,6 +600,73 @@ struct Emiter
         code.emiter2(src);
         code.emiter4(imm32);
     }
+    // 对象分配 op des,typeserial : 8-8-32
+    inline void new_obj_r8(uint8_t des, uint32_t typeserial)
+    {
+        uint16_t ins = (op_memory_new_obj_r8 << 8) | des;
+        code.emiter2(ins);
+        code.emiter4(typeserial);
+    }
+    // 对象分配 op des,typeserial : 8-[8]-16-32
+    inline void new_obj_r16(uint16_t des, uint32_t typeserial)
+    {
+        uint16_t ins = (op_memory_new_obj_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter4(typeserial);
+    }
+    // 对象引用 op des : 8-8
+    inline void grab_obj_r8(uint8_t des)
+    {
+        uint16_t ins = (op_memory_grab_obj_r8 << 8) | des;
+        code.emiter2(ins);
+    }
+    // 对象引用 op des : 8-[8]-16
+    inline void grab_obj_r16(uint16_t des)
+    {
+        uint16_t ins = (op_memory_grab_obj_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(des);
+    }
+    // 对象释放 op des : 8-8
+    inline void drop_obj_r8(uint8_t des)
+    {
+        uint16_t ins = (op_memory_drop_obj_r8 << 8) | des;
+        code.emiter2(ins);
+    }
+    // 对象释放 op des : 8-[8]-16
+    inline void drop_obj_r16(uint16_t des)
+    {
+        uint16_t ins = (op_memory_drop_obj_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(des);
+    }
+    // 对象锁定 op des : 8-8
+    inline void lock_obj_r8(uint8_t des)
+    {
+        uint16_t ins = (op_memory_lock_obj_r8 << 8) | des;
+        code.emiter2(ins);
+    }
+    // 对象锁定 op des : 8-[8]-16
+    inline void lock_obj_r16(uint16_t des)
+    {
+        uint16_t ins = (op_memory_lock_obj_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(des);
+    }
+    // 对象解锁 op des : 8-8
+    inline void unlock_obj_r8(uint8_t des)
+    {
+        uint16_t ins = (op_memory_unlock_obj_r8 << 8) | des;
+        code.emiter2(ins);
+    }
+    // 对象解锁 op des : 8-[8]-16
+    inline void unlock_obj_r16(uint16_t des)
+    {
+        uint16_t ins = (op_memory_unlock_obj_r16 << 8);
+        code.emiter2(ins);
+        code.emiter2(des);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__

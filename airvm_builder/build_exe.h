@@ -276,7 +276,7 @@ void build_exe()
 
             main.func_code.free_r8(2);
         }
-        */
+
 
         // 立即数内存数据加载
         {
@@ -335,6 +335,24 @@ void build_exe()
             main.func_code.load_r16_imm32(subop_load_ptr, 7, 4, 2);
 
             main.func_code.free_r8(2);
+        }
+        */
+
+        // 对象分配等测试
+        {
+            main.func_code.new_obj_r8(0, 5);
+            main.func_code.grab_obj_r8(0);
+            main.func_code.drop_obj_r8(0);
+            main.func_code.lock_obj_r8(0);
+            main.func_code.unlock_obj_r8(0);
+            main.func_code.drop_obj_r8(0);
+
+            main.func_code.new_obj_r16(0, 6);
+            main.func_code.grab_obj_r16(0);
+            main.func_code.drop_obj_r16(0);
+            main.func_code.lock_obj_r16(0);
+            main.func_code.unlock_obj_r16(0);
+            main.func_code.drop_obj_r16(0);
         }
 
         main.func_code.return_imm16(subop_return_u16, 0);

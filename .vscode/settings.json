@@ -73,6 +73,7 @@
         "random": "cpp",
         "string_view": "cpp",
         "numbers": "cpp",
-        "airvm_mov_r4.inl": "c"
+        "airvm_mov_r4.inl": "c",
+        "stdatomic.h": "c"
     }
 }

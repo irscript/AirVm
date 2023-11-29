@@ -472,7 +472,7 @@ static inline airvm_native_func_t *airvm_get_native_func(airvm_func_t current, u
     }
     return 0;
 }
-
+// 对象头
 typedef struct
 {
     union
@@ -493,7 +493,8 @@ typedef struct
         {
             volatile uint8_t lock; // 自旋锁定
             uint8_t arrcols;       // 数组维度
-            uint16_t other;        // 其他待扩展
+            uint16_t arrblk : 1;   // 块数组标记
+            uint16_t other : 15;   // 其他待扩展
         };
     };
 } airvm_object_header_t;
@@ -511,15 +512,75 @@ static inline uintptr_t airvm_new_object(airvm_func_t current, uint32_t type)
             {
                 // 分配类型
                 bcfmt_type_hd_t *hd = (bcfmt_type_hd_t *)gVMFilev[i]->tabtype->item[type];
-                if (hd == 0)
+                if (0 == hd)
                 {
                     printf("%s: Type data address is nullptr! type: %u\n",
                            gVMFilev[i]->filename.str, type);
                     return 0;
                 }
-
-                // if(hd->flag&airvm_bcfmt_type_builtin)
-                return &(gVMFilev[i]->tabnat->item[dll].nat->tabfun->funcs[func]);
+                // 计算分配内存大小
+                uintptr_t size = hd->size + sizeof(airvm_object_header_t);
+                uintptr_t blk = (uintptr_t)malloc(size);
+                if (0 == blk)
+                {
+                    printf("%s: memory allocation failed! type: %s\n",
+                           gVMFilev[i]->filename.str, gVMFilev[i]->tabstr->item[hd->name]->str);
+                    return 0;
+                }
+                // 初始化对象头
+                memset((void *)blk, 0, size);
+                airvm_object_header_t *objhd = (airvm_object_header_t *)blk;
+                objhd->buildin = (bcfmt_type_buildin_t *)hd; // 记录类型
+                objhd->refcount = 1;                         // 引用计数
+                objhd->flags = 0;                            // 其他标记
+                // 返回
+                return blk + sizeof(airvm_object_header_t);
+            }
+            else
+            {
+                printf("%s: Type number overflow  ! type: %u\n",
+                       gVMFilev[i]->filename.str, type);
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+// 分配数组对象
+static inline uintptr_t airvm_new_array_object(airvm_func_t current, uint32_t type)
+{
+    for (uint32_t i = 0; i < gVMFiles; ++i)
+    {
+        uintptr_t start = gVMFilev[i]->address;
+        uintptr_t end = start + gVMFilev[i]->size;
+        if (start < (uintptr_t)current && (uintptr_t)current < end)
+        {
+            if (type < gVMFilev[i]->tabtype->count)
+            {
+                // 分配类型
+                bcfmt_type_hd_t *hd = (bcfmt_type_hd_t *)gVMFilev[i]->tabtype->item[type];
+                if (0 == hd)
+                {
+                    printf("%s: Type data address is nullptr! type: %u\n",
+                           gVMFilev[i]->filename.str, type);
+                    return 0;
+                }
+                // 计算分配内存大小
+                uintptr_t size = hd->size + sizeof(airvm_object_header_t);
+                uintptr_t blk = (uintptr_t)malloc(size);
+                if (0 == blk)
+                {
+                    printf("%s: memory allocation failed! type: %s\n",
+                           gVMFilev[i]->filename.str, gVMFilev[i]->tabstr->item[hd->name]->str);
+                    return 0;
+                }
+                // 初始化对象头
+                airvm_object_header_t *objhd = (airvm_object_header_t *)blk;
+                objhd->buildin = (bcfmt_type_buildin_t *)hd; // 记录类型
+                objhd->refcount = 1;                         // 引用计数
+                objhd->flags = 0;                            // 其他标记
+                // 返回
+                return blk + sizeof(airvm_object_header_t);
             }
             else
             {
@@ -532,9 +593,52 @@ static inline uintptr_t airvm_new_object(airvm_func_t current, uint32_t type)
     return 0;
 }
 // 引用对象
-static void airvm_grab_object() {}
+static inline void airvm_grab_object(uintptr_t blk)
+{
+    assert(0 != blk);
+    if (0 != blk)
+    {
+        airvm_object_header_t *objhd = (airvm_object_header_t *)(blk - sizeof(airvm_object_header_t));
+        atomic_fetch_add(&objhd->refcount, 1);
+    }
+}
 // 释放对象
-static void airvm_drop_object() {}
+static inline void airvm_drop_object(uintptr_t *blk)
+{
+    assert(0 != *blk);
+    if (0 != *blk)
+    {
+        airvm_object_header_t *objhd = (airvm_object_header_t *)(*blk - sizeof(airvm_object_header_t));
+        atomic_fetch_sub(&objhd->refcount, 1);
+        // 判断是否该释放内存
+        if (0 == atomic_load(&objhd->refcount))
+        {
+            // TODO:类、数组对象的析构
+            free(objhd);
+            *blk = 0;
+        }
+    }
+}
+// 锁定对象
+static inline void airvm_lock_object(uintptr_t blk)
+{
+    assert(0 != blk);
+    if (0 != blk)
+    {
+        airvm_object_header_t *objhd = (airvm_object_header_t *)(blk - sizeof(airvm_object_header_t));
+        atomic_flag_test_and_set(&objhd->lock);
+    }
+}
+// 解锁对象
+static inline void airvm_unlock_object(uintptr_t blk)
+{
+    assert(0 != blk);
+    if (0 != blk)
+    {
+        airvm_object_header_t *objhd = (airvm_object_header_t *)(blk - sizeof(airvm_object_header_t));
+        atomic_flag_clear(&objhd->lock);
+    }
+}
 
 void airvm_run(airvm_actor_t actor)
 {
@@ -642,11 +746,93 @@ void airvm_run(airvm_actor_t actor)
             // 有GC引用
         case op_memory_new_obj_r8: // 分配普通对象: op des,typeserial : 8-8-32
         {
-            uint32_t subop = ins & 0x00FF;
-            uint32_t des = insarr[*pc + 1];
-            uintptr_t type = *(uint32_t *)&insarr[*pc + 2];
-
+            uint32_t des = ins & 0x00FF;
+            uint32_t type = *(uint32_t *)&insarr[*pc + 1];
+            *(uintptr_t *)&reg[des] = airvm_new_object(func, type);
+            insresult("%4X: new_obj_r8 \tr%d,\t%u\n", *pc, des, type);
             *pc += 3;
+            continue;
+        }
+        break;
+        case op_memory_new_obj_r16: // 分配普通对象: op des,typeserial : 8-[8]-16-32
+        {
+            uint32_t des = insarr[*pc + 1];
+            uint32_t type = *(uint32_t *)&insarr[*pc + 2];
+            *(uintptr_t *)&reg[des] = airvm_new_object(func, type);
+            insresult("%4X: new_obj_r16 \tr%d,\t%u\n", *pc, des, type);
+            *pc += 4;
+            continue;
+        }
+        break;
+        case op_memory_grab_obj_r8: // 对象引用: op des : 8-8
+        {
+            uint32_t des = ins & 0x00FF;
+            airvm_grab_object(*(uintptr_t *)&reg[des]);
+            insresult("%4X: grab_obj_r8 \tr%d\n", *pc, des);
+            *pc += 1;
+            continue;
+        }
+        break;
+        case op_memory_grab_obj_r16: // 对象引用: op des : 8-[8]-16
+        {
+            uint32_t des = insarr[*pc + 1];
+            airvm_grab_object(*(uintptr_t *)&reg[des]);
+            insresult("%4X: grab_obj_r16 \tr%d\n", *pc, des);
+            *pc += 2;
+            continue;
+        }
+        break;
+        case op_memory_drop_obj_r8: // 对象释放: op des : 8-8
+        {
+            uint32_t des = ins & 0x00FF;
+            airvm_drop_object((uintptr_t *)&reg[des]);
+            insresult("%4X: drop_obj_r8 \tr%d\n", *pc, des);
+            *pc += 1;
+            continue;
+        }
+        break;
+        case op_memory_drop_obj_r16: // 对象释放: op des : 8-[8]-16
+        {
+            uint32_t des = insarr[*pc + 1];
+            airvm_drop_object((uintptr_t *)&reg[des]);
+            insresult("%4X: drop_obj_r16 \tr%d\n", *pc, des);
+            *pc += 2;
+            continue;
+        }
+        break;
+        case op_memory_lock_obj_r8: // 对象锁定: op des : 8-8
+        {
+            uint32_t des = ins & 0x00FF;
+            airvm_lock_object(*(uintptr_t *)&reg[des]);
+            insresult("%4X: lock_obj_r8 \tr%d\n", *pc, des);
+            *pc += 1;
+            continue;
+        }
+        break;
+        case op_memory_lock_obj_r16: // 对象锁定: op des : 8-[8]-16
+        {
+            uint32_t des = insarr[*pc + 1];
+            airvm_lock_object(*(uintptr_t *)&reg[des]);
+            insresult("%4X: lock_obj_r16 \tr%d\n", *pc, des);
+            *pc += 2;
+            continue;
+        }
+        break;
+        case op_memory_unlock_obj_r8: // 对象解锁: op des : 8-8
+        {
+            uint32_t des = ins & 0x00FF;
+            airvm_unlock_object(*(uintptr_t *)&reg[des]);
+            insresult("%4X: unlock_obj_r8 \tr%d\n", *pc, des);
+            *pc += 1;
+            continue;
+        }
+        break;
+        case op_memory_unlock_obj_r16: // 对象解锁: op des : 8-[8]-16
+        {
+            uint32_t des = insarr[*pc + 1];
+            airvm_unlock_object(*(uintptr_t *)&reg[des]);
+            insresult("%4X: unlock_obj_r16 \tr%d\n", *pc, des);
+            *pc += 2;
             continue;
         }
         break;
