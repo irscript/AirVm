@@ -164,6 +164,22 @@ enum OPEnum
     // 获取数组中的值，偏移值为索引
     op_array_get_data_r8_subop,  // op subop,des,src,offset : 8-8-8-8-16
     op_array_get_data_r16_subop, // op subop,des,src,offset : 8-8-16-16-16
+
+    // 类型转换:op des,src,type
+    op_cast_type_r8,  // 8-8-16-32
+    op_cast_type_r16, // 8-[8]-16-16-32
+    // 是否是该类型的实例:op des,src,type
+    op_instance_of_r8,  // 8-8-16-32
+    op_instance_of_r16, // 8-[8]-16-16-32
+
+    // 注册异常处理表
+    op_register_exception, // op tab :8-24
+    // 异常抛出:op src
+    op_throw_r8,  // 8-8
+    op_throw_r16, // 8-[8]-16
+    // 获取异常对象
+    op_get_exception_r8,  // 8-8
+    op_get_exception_r16, // 8-[8]-16
 };
 
 // 子码定义
