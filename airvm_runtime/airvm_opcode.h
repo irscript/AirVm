@@ -152,7 +152,16 @@ enum OPEnum
     op_array_get_length_r8,  // op col,des,src : 8-8-8-8
     op_array_get_length_r16, // op col,des,src : 8-8-16-16
 
-    // 获取数组中的值
+    // 检查数组维度值是否溢出,op cols,des,src,col,col2,...coln
+    op_array_check_cols_r8,  // 8-8-8-8-...-8
+    op_array_check_cols_r16, // 8-8-16-16-...-16
+
+    // 计算数组的维度偏移值,只计算偏移索引，不计算类型
+    // op cols,des,col,col2,...coln
+    op_array_cols_offset_r8,  // 8-8-8-8-8-...-8
+    op_array_cols_offset_r16, // 8-8-16-16-...-16
+
+    // 获取数组中的值，偏移值为索引
     op_array_get_data_r8_subop,  // op subop,des,src,offset : 8-8-8-8-16
     op_array_get_data_r16_subop, // op subop,des,src,offset : 8-8-16-16-16
 };
