@@ -151,6 +151,10 @@ enum OPEnum
     // 获取数组的维度值 op col,des,src
     op_array_get_length_r8,  // op col,des,src : 8-8-8-8
     op_array_get_length_r16, // op col,des,src : 8-8-16-16
+
+    // 获取数组中的值
+    op_array_get_data_r8_subop,  // op subop,des,src,offset : 8-8-8-8-16
+    op_array_get_data_r16_subop, // op subop,des,src,offset : 8-8-16-16-16
 };
 
 // 子码定义

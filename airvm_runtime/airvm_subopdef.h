@@ -529,6 +529,48 @@ enum SubOPEnum
 
     subop_store_ptr,
 
+    //--------------------数组数据加载存储------------------
+    subop_array_get_w32_i8 = 0,
+    subop_array_get_w32_u8,
+    subop_array_get_w32_i16,
+    subop_array_get_w32_u16,
+    subop_array_get_w32_i32,
+    subop_array_get_w32_u32,
+    subop_array_get_w32_f32,
+
+    subop_array_get_w64_i8,
+    subop_array_get_w64_u8,
+    subop_array_get_w64_i16,
+    subop_array_get_w64_u16,
+    subop_array_get_w64_i32,
+    subop_array_get_w64_u32,
+    subop_array_get_w64_i64,
+    subop_array_get_w64_u64,
+    subop_array_get_w64_f64,
+
+    subop_array_get_data_ptr, // 获取的值是地址
+
+    subop_array_get_ptr, // 获取偏移元素的地址
+
+    subop_array_put_w32_i8,
+    subop_array_put_w32_u8,
+    subop_array_put_w32_i16,
+    subop_array_put_w32_u16,
+    subop_array_put_w32_i32,
+    subop_array_put_w32_u32,
+    subop_array_put_w32_f32,
+
+    subop_array_put_w64_i8,
+    subop_array_put_w64_u8,
+    subop_array_put_w64_i16,
+    subop_array_put_w64_u16,
+    subop_array_put_w64_i32,
+    subop_array_put_w64_u32,
+    subop_array_put_w64_i64,
+    subop_array_put_w64_u64,
+    subop_array_put_w64_f64,
+
+    subop_array_put_data_ptr, // 获取的值是地址
 };
 
 #endif // __AIRVM_SUBOPDEF_INC__
