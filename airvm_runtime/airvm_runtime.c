@@ -856,6 +856,40 @@ void airvm_run(airvm_actor_t actor)
             continue;
         }
         break;
+            // 获取数组的维度值
+        case op_array_get_length_r8: // op col,des,src : 8-8-8-8
+        {
+            uint32_t cols = ins & 0x00FF;
+            uint16_t ins2 = insarr[*pc + 1];
+            uint32_t des = ins2 >> 8;
+            uint32_t src = ins2 & 0xFF;
+            insresult("%4X: array_get_length_r8 \t%u,\tr%d,\tr%d\n", *pc, cols, des, src);
+            uintptr_t obj = *(uintptr_t *)&reg[src];
+            airvm_object_header_t *hd = (airvm_object_header_t *)(obj - sizeof(airvm_object_header_t));
+            assert(cols < hd->arrcols);
+            uintptr_t colv = ((uintptr_t *)obj)[cols];
+            *(uintptr_t *)&reg[des] = colv;
+            insresult("\tcolv = %lld\n", colv);
+            *pc += 2;
+            continue;
+        }
+        break;
+        case op_array_get_length_r16: // op col,des,src : 8-8-16-16
+        {
+            uint32_t cols = ins & 0x00FF;
+            uint32_t des = insarr[*pc + 1];
+            uint32_t src = insarr[*pc + 2];
+            insresult("%4X: array_get_length_r16 \t%u,\tr%d,\tr%d\n", *pc, cols, des, src);
+            uintptr_t obj = *(uintptr_t *)&reg[src];
+            airvm_object_header_t *hd = (airvm_object_header_t *)(obj - sizeof(airvm_object_header_t));
+            assert(cols < hd->arrcols);
+            uintptr_t colv = ((uintptr_t *)obj)[cols];
+            *(uintptr_t *)&reg[des] = colv;
+            insresult("\tcolv = %lld\n", colv);
+            *pc += 3;
+            continue;
+        }
+        break;
 
         // op 默认处理
         default:

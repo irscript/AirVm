@@ -131,7 +131,7 @@ enum OPEnum
     // 有GC引用
     op_memory_new_obj_r8,  // 分配普通对象: op des,typeserial : 8-8-32
     op_memory_new_obj_r16, // 分配普通对象: op des,typeserial : 8-[8]-16-32
-    
+
     op_memory_grab_obj_r8,  // 引用：op des : 8-8
     op_memory_grab_obj_r16, // 引用：op des : 8-[8]-16
 
@@ -147,6 +147,10 @@ enum OPEnum
     // cols表示数组的维度,op cols,typeserial,des,col,col2,...coln
     op_memory_new_array_r8,  // 分配数组对象 :8-8-32-8-8-8-...-8
     op_memory_new_array_r16, // 分配数组对象 :8-8-32-16-16-16...-16
+
+    // 获取数组的维度值 op col,des,src
+    op_array_get_length_r8,  // op col,des,src : 8-8-8-8
+    op_array_get_length_r16, // op col,des,src : 8-8-16-16
 };
 
 // 子码定义

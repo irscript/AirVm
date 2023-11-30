@@ -695,6 +695,22 @@ struct Emiter
         for (int i = 0; i < cols.size(); ++i)
             code.emiter2(cols[i]);
     }
+    // 获取数组的维度值 op col,des,src : 8-8-8-8
+    inline void array_get_length_r8(uint8_t col, uint8_t des, uint8_t src)
+    {
+        uint16_t ins = (op_array_get_length_r8 << 8) | col;
+        code.emiter2(ins);
+        ins = (des << 8) | src;
+        code.emiter2(ins);
+    }
+    // 获取数组的维度值 op col,des,src : 8-8-8-8
+    inline void array_get_length_r16(uint8_t col, uint16_t des, uint16_t src)
+    {
+        uint16_t ins = (op_array_get_length_r16 << 8) | col;
+        code.emiter2(ins);
+        code.emiter2(des);
+        code.emiter2(src);
+    }
 };
 
 #endif // __AIRINS_EMITER_INC__
